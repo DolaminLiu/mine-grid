@@ -1,0 +1,69 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn add vuedraggable
+
+PATH: 
+  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  12.14.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error [ERR_TLS_CERT_ALTNAME_INVALID]: Hostname/IP does not match certificate's altnames: Host: registry.npm.taobao.com. is not in the cert's altnames: DNS:*.taobao.com, DNS:*.izhongchou.taobao.com, DNS:*.yingxiao.taobao.com, DNS:trace.cps.taobao.com, DNS:*.julang.taobao.com, DNS:*.dmp.taobao.com, DNS:api.ent.taobao.com, DNS:*.taodetail.taobao.com, DNS:*.item.taobao.com, DNS:*.movie.taobao.com, DNS:*.sellercenter.taobao.tw, DNS:*.alisp-openadmin.taobao.com, DNS:*.taoxiaopu.taobao.com, DNS:*.developers.taobao.com, DNS:*.jianghu.taobao.com, DNS:*.wapa.taobao.com, DNS:*.alimebot.taobao.com, DNS:*.astore-alsc.taobao.com, DNS:*.ds.taobao.com, DNS:*.i56.taobao.com, DNS:*.themis.taobao.com, DNS:*.sycm-ct.taobao.com, DNS:*.darenmcn.taobao.com, DNS:*.yueke.taobao.com, DNS:*.pre-haoxue.taobao.com, DNS:*.txd.taobao.com, DNS:*.x-space.taobao.com, DNS:*.dsc.taobao.com, DNS:*.taojinbi.taobao.com, DNS:*.global.i56.taobao.com, DNS:*.ma.taobao.com, DNS:*.2.taobao.com, DNS:*.gateway.simba.taobao.com, DNS:*.alibeebot.taobao.com, DNS:*.cbbs.taobao.com, DNS:*.nextbi.taobao.com, DNS:*.console.taobao.com, DNS:*.alsc.taobao.com, DNS:*.shuyuan.taobao.com, DNS:*.tf.taobao.com, DNS:*.corp.taobao.com, DNS:*.livec.taobao.com, DNS:*.fenxiao.taobao.com, DNS:*.world.taobao.com, DNS:*.yulebao.taobao.com, DNS:*.zuanshi.taobao.com, DNS:*.ajax.taobao.com, DNS:*.dianying.taobao.com, DNS:*.prepub.taobao.com, DNS:*.taobao.comunity-sign-front-static.taobao.com, DNS:*.intl.taobao.com, DNS:*.pre-repo1-git-jae.taobao.com, DNS:*.wangpu.taobao.com, DNS:*.xiangqing.taobao.com, DNS:*.110.taobao.com, DNS:*.design.taobao.com, DNS:*.fuwu.taobao.com, DNS:*.aliqin.taobao.com, DNS:*.homelab.taobao.com, DNS:*.rule.taobao.com, DNS:*.gpu.taobao.com, DNS:*.game.taobao.com, DNS:*.pmcrm.taobao.com, DNS:*.olympic.taobao.com, DNS:*.solar.taobao.com, DNS:taopiaopiao.com, DNS:*.fengchao.taobao.com, DNS:*.idestudio.taobao.com, DNS:*.alijk.taobao.com, DNS:*.prealihealth.taobao.com, DNS:*.tae.taobao.com, DNS:*.admin.dataserver.taobao.com, DNS:*.dian.taobao.com, DNS:*.alisports.taobao.com, DNS:click.tz.simba.taobao.com, DNS:*.xreplay-service.taobao.com, DNS:*.robot.taobao.com, DNS:*.t.taobao.com, DNS:*.wangwang.taobao.com, DNS:*.re.taobao.com, DNS:*.video.taobao.com, DNS:*.bops.taobao.tw, DNS:*.wangxin.taobao.com, DNS:*.prada.taobao.com, DNS:*.settle.taobao.com, DNS:*.survey.taobao.com, DNS:*.sh.taobao.com, DNS:*.china.taobao.com, DNS:*.einvoice.taobao.com, DNS:*.vip.taobao.com, DNS:s.ijipiao.trip.taobao.com, DNS:pac.partner.taobao.com, DNS:*.cloud.tmall.com, DNS:*.fuwuwebapp.taobao.com, DNS:pre-showcase.display.taobao.com, DNS:*.olap.taobao.com, DNS:*.auks.m.taobao.com, DNS:*.di.taobao.com, DNS:*.hi.taobao.com, DNS:*.admin.taobao.com, DNS:*.detail.taobao.com, DNS:*.mpop.taobao.com, DNS:*.ct-proxy.taobao.com, DNS:*.istore.taobao.com, DNS:*.xue.taobao.com, DNS:*.baichuan.taobao.com, DNS:showcase.display.taobao.com, DNS:*.settle.simba.taobao.com, DNS:*.webappp.taobao.com, DNS:*.app.taobao.com, DNS:*.lz.taobao.com, DNS:gsp.mystg.taobao.com, DNS:*.now.taobao.com, DNS:*.ow.taobao.com, DNS:*.ml.taobao.com, DNS:*.xconsultant-gateway.taobao.com, DNS:*.api.m.taobao.com, DNS:*.bcctg.taobao.com, DNS:*.sale.taobao.com, DNS:*.taoshehui.taobao.com, DNS:*.media.taobao.com, DNS:*.cun.taobao.com, DNS:*.taowoyao.taobao.com, DNS:*.rate.taobao.com, DNS:*.deviceplat.taobao.com, DNS:*.site.taobao.com, DNS:*.marketingbox.taobao.com, DNS:*.taobao.tw, DNS:*.livex.taobao.com, DNS:*.alimebot.taobao.tw, DNS:*.gds.taobao.com, DNS:*.trip.taobao.com, DNS:*.chuangyi.taobao.com, DNS:*.uland.taobao.com, DNS:*.ipfans.taobao.com, DNS:*.trade.tw.taobao.com, DNS:*.airec.taobao.com, DNS:*.miaojie.taobao.com, DNS:*.operate.taobao.com, DNS:*.ww.taobao.com, DNS:*.sec.taobao.com, DNS:*.try.taobao.com, DNS:*.alscad.taobao.com, DNS:*.homestyler.taobao.com, DNS:*.cloud.taobao.com, DNS:pre-i.i.taobao.com, DNS:*.content.taobao.com, DNS:*.crm.taobao.com, DNS:*.oto.taobao.com, DNS:*.waptest.taobao.com, DNS:*.pinpai.taobao.com, DNS:*.api.taobao.com, DNS:*.smartdata.taobao.com, DNS:*.cdn.taobao.com, DNS:*.seller.taobao.com, DNS:*.wapa.taobao.tw, DNS:*.tv.taobao.com, DNS:*.qianniu.taobao.com, DNS:*.dd.taobao.com, DNS:m.service.taobao.com, DNS:*.pre-tcgw.taobao.com, DNS:tmatch.simba2.taobao.com, DNS:*.lingshou.taobao.com, DNS:*.shell.taobao.com, DNS:click.mz.simba.taobao.com, DNS:*.meta-search.taobao.com, DNS:*.daxue.taobao.com, DNS:*.upload.taobao.com, DNS:*.timesheet.taobao.com, DNS:*.apitest.taobao.com, DNS:*.aistore.taobao.com, DNS:*.open.taobao.com, DNS:*.simba.taobao.com, DNS:*.havana.taobao.com, DNS:*.baoxian.taobao.com, DNS:*.juadmin.taobao.com, DNS:*.temai.taobao.com, DNS:xiami.com, DNS:*.click.taobao.com, DNS:*.virtualbuy.taobao.com, DNS:*.astore-multitenant.taobao.com, DNS:*.click.taobao.tw, DNS:s.jipiao.trip.taobao.com, DNS:*.huyan.taobao.com, DNS:*.mts.taobao.com, DNS:*.tjseller.taobao.com, DNS:*.dc.taobao.com, DNS:*.brand.taobao.com, DNS:*.linking-test.taobao.com, DNS:*.secondlife.taobao.com, DNS:*.cms.m.taobao.com, DNS:*.online.taobao.com, DNS:*.sellercenter.taobao.com, DNS:*.global.taobao.com, DNS:*.bcfeedback.taobao.com, DNS:*.sellercenter-staging.taobao.tw, DNS:*.work.taobao.com, DNS:*.buildsite.taobao.com, DNS:*.sopapi.taobao.com, DNS:pre-cambridge.decoration.taobao.com, DNS:*.taotv.taobao.com, DNS:*.astore-alsc-l100crm.taobao.com, DNS:unszyun.api-xspace.taobao.com, DNS:*.caipiao.taobao.com, DNS:ugc.pre.taobao.com, DNS:*.qc.taobao.com, DNS:*.speech.taobao.com, DNS:*.branding.taobao.com, DNS:*.stadium.taobao.com, DNS:*.m.taobao.com, DNS:*.lbs.taobao.com, DNS:*.train.taobao.com, DNS:*.fliggy.taobao.com, DNS:*.mkt.taobao.com, DNS:*.faasonasi.taobao.com, DNS:*.service.taobao.com, DNS:*.search.taobao.com, DNS:*.debug.taobao.com, DNS:*.yun.taobao.com, DNS:*.browser.taobao.com, DNS:*.zb.taobao.com, DNS:*.publish.taobao.com, DNS:*.ju.taobao.com, DNS:*.life.taobao.com, DNS:*.polaris.taobao.com, DNS:*.fngroup.taobao.com, DNS:*.homeai.taobao.com, DNS:*.bbs.taobao.com, DNS:*.ai.taobao.com, DNS:*.yunos-tv.taobao.com, DNS:*.alidetail.taobao.com, DNS:*.ut.taobao.com, DNS:*.manager.taobao.com, DNS:*.wuliu.taobao.com, DNS:*.oversea.taobao.com, DNS:*.analysis.taobao.com, DNS:*.air-inner.taobao.com, DNS:*.paimai.taobao.com, DNS:*.taopiaopiao.com, DNS:*.prepub.taobao.tw, DNS:*.xiami.com, DNS:*.alicom.taobao.com, DNS:*.mcache.taobao.com, DNS:*.we.taobao.com, DNS:*.pay.taobao.com, DNS:*.ws-nextbi.taobao.com, DNS:*.badcase-es-old.taobao.com, DNS:*.taolive-cp.taobao.com, DNS:*.wow-share.taobao.com, DNS:*.crm-daxue.taobao.com, DNS:*.passport.taobao.com, DNS:*.dongfeng.taobao.com, DNS:*.sycm.taobao.com, DNS:*.tjb-sycm.taobao.com, DNS:*.uz.taobao.com, DNS:*.sz.taobao.com, DNS:*.lazada.taobao.com, DNS:*.bot.taobao.com, DNS:*.proxy.taobao.com, DNS:*.elm.taobao.com, DNS:*.amp.taobao.com, DNS:*.ump.taobao.com, DNS:*.pan.taobao.com, DNS:*.tw.taobao.com, DNS:*.s.taobao.com, DNS:*.shop.taobao.com, DNS:*.need.taobao.com, DNS:*.ny.taobao.com, DNS:*.o2o.taobao.com, DNS:*.alidesign.taobao.com, DNS:*.config.taobao.com, DNS:*.youku.taobao.com, DNS:*.tejia.taobao.com, DNS:pre-unszyun.api-xspace.taobao.com, DNS:*.tcgw.taobao.com, DNS:*.mtdata.taobao.com, DNS:*.alihealth.taobao.com, DNS:*.haoxue.taobao.com, DNS:*.virtual.taobao.com, DNS:*.luban.taobao.com, DNS:*.test.taobao.com, DNS:taobao.com
+      at Object.checkServerIdentity (tls.js:279:12)
+      at TLSSocket.onConnectSecure (_tls_wrap.js:1331:27)
+      at TLSSocket.emit (events.js:210:5)
+      at TLSSocket._finishInit (_tls_wrap.js:794:8)
+      at TLSWrap.ssl.onhandshakedone (_tls_wrap.js:608:12)
+
+npm manifest: 
+  {
+    "name": "open-api",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+      "serve": "vue-cli-service serve",
+      "build": "vue-cli-service build",
+      "build:alpha": "vue-cli-service build --mode development",
+      "lint": "vue-cli-service lint"
+    },
+    "dependencies": {
+      "ant-design-vue": "^1.5.2",
+      "axios": "^0.19.2",
+      "core-js": "^3.1.2",
+      "md5": "^2.2.1",
+      "mockjs2": "^1.0.8",
+      "moment": "^2.24.0",
+      "nprogress": "^0.2.0",
+      "vue": "^2.6.10",
+      "vue-ls": "^3.2.1",
+      "vue-router": "^3.1.2",
+      "vuex": "^3.1.1"
+    },
+    "devDependencies": {
+      "@vue/cli-plugin-babel": "^4.0.4",
+      "@vue/cli-plugin-eslint": "^4.0.4",
+      "@vue/cli-service": "^4.0.4",
+      "@vue/eslint-config-standard": "^4.0.0",
+      "babel-eslint": "^10.0.1",
+      "babel-plugin-import": "^1.12.2",
+      "babel-plugin-transform-remove-console": "^6.9.4",
+      "eslint": "^5.16.0",
+      "eslint-plugin-vue": "^5.0.0",
+      "less": "^3.0.4",
+      "less-loader": "^5.0.0",
+      "vue-template-compiler": "^2.6.10",
+      "webpack-bundle-analyzer": "^3.6.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
