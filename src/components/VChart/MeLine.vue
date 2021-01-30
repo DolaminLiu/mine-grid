@@ -1,12 +1,17 @@
 <template>
-  <div class="chartcontainer" style="width:100%;height:100%" ref="MeLine">
+  <div class="chartcontainer" style="width:100%;flex: 1" ref="MeLine">
     <ve-line
+    ref="mychart"
     :data="dataSource.chartData"
     width="100%"
     height="100%"
     :colors="colors"
     :judge-width="true"
-    ref="mychart"></ve-line>
+    :data-empty="dataEmpty"
+    :grid="grid"
+    :legend-visible="legendVisible"
+    :extend="chartExtend"
+    ></ve-line>
   </div>
 </template>
 
@@ -41,6 +46,7 @@ export default {
       }
     },
     commentWidth: Number,
+    title: String,
     commentHeight: Number,
     colors: {
       type: Array,
@@ -56,24 +62,31 @@ export default {
           '#546570',
           '#c4ccd3']
       }
-    }
+    },
+    grid: Object,
+    legendVisible: Boolean,
+    chartExtend: Object
   },
   components: {
     VeLine
   },
   data () {
     return {
-
+      dataEmpty: false
     }
   },
   watch: {
     dataSource (newVal) {
       this.$refs.mychart.echarts.resize()
+      this.dataEmpty = !newVal.chartData.rows.length
     },
     commentWidth (newVal) {
       this.$refs.mychart.echarts.resize()
     },
     commentHeight () {
+      this.$refs.mychart.echarts.resize()
+    },
+    title () {
       this.$refs.mychart.echarts.resize()
     }
   }

@@ -1,13 +1,19 @@
 <template>
   <div class="chartcontainer" style="width:100%;height:100%" ref="MeLine">
     <ve-pie
+    ref="mychart"
     :data="dataSource.chartData"
     width="100%"
     height="100%"
+    :chartSettings="chartSettings"
     :colors="colors"
     :settings="chartSettings"
     :judge-width="true"
-    ref="mychart"></ve-pie>
+    :data-empty="dataEmpty"
+    :grid="grid"
+    :legend-visible="legendVisible"
+    :extend="chartExtend"
+    ></ve-pie>
   </div>
 </template>
 
@@ -43,7 +49,11 @@ export default {
     },
     commentWidth: Number,
     commentHeight: Number,
-    chartSettings: String,
+    grid: Object,
+    legendVisible: Boolean,
+    chartExtend: Object,
+    title: String,
+    chartSettings: Object,
     colors: {
       type: Array,
       default: () => {
@@ -65,17 +75,21 @@ export default {
   },
   data () {
     return {
-
+      dataEmpty: false
     }
   },
   watch: {
     dataSource (newVal) {
       this.$refs.mychart.echarts.resize()
+      this.dataEmpty = !newVal.chartData.rows.length
     },
     commentWidth (newVal) {
       this.$refs.mychart.echarts.resize()
     },
     commentHeight () {
+      this.$refs.mychart.echarts.resize()
+    },
+    title () {
       this.$refs.mychart.echarts.resize()
     }
   }

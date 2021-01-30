@@ -1,13 +1,17 @@
 <template>
   <div style="width: 100%;height:100%">
     <div class="drag-box" @click="onActivated(item)">
-            <div class="report-title">{{ item.i || "" }}</div>
+            <div class="report-title">{{ item.title || "" }}</div>
             <component
               :is="item.components"
               :dataSource="item"
-              :setting="item.setting"
+              :chartSettings="item.chartSettings"
               :commentWidth="item.commentWidth"
               :commentHieght="item.commentHeight"
+              :grid="item.grid"
+              :title="item.title"
+              :legendVisible="item.legendVisible"
+              :chartExtend="item.chartExtend"
               :judge-width="true"
               :style="{ flex: 1, overflow: item.type === 'v-charts' ? 'hidden' : 'auto'}"
             ></component>
@@ -50,6 +54,11 @@ export default {
     MePie,
     MeTable
   },
+  watch: {
+    item (newVal) {
+      console.log('ooooo')
+    }
+  },
   methods: {
     deleteItem (item) {
       this.$emit('deleteItem', item)
@@ -64,11 +73,26 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 .drag-box {
   padding: 8px;
   width: 100%;
   height: 100%;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  .report-title {
+    position: relative;
+    padding-left: 10px;
+    &:before {
+      content: '';
+      width: 3px;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: #1890ff;
+    }
+  }
 }
 </style>

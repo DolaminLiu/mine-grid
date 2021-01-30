@@ -1,12 +1,17 @@
 <template>
   <div class="chartcontainer" style="width:100%;height:100%">
     <ve-histogram
+    ref="mychart"
     :data="dataSource.chartData"
     width="100%"
     height="100%"
     :colors="colors"
     :judge-width="true"
-    ref="mychart"></ve-histogram>
+    :data-empty="dataEmpty"
+    :grid="grid"
+    :legend-visible="legendVisible"
+    :extend="chartExtend"
+    ></ve-histogram>
   </div>
 </template>
 
@@ -41,6 +46,10 @@ export default {
     },
     commentWidth: Number,
     commentHeight: Number,
+    grid: Object,
+    title: String,
+    legendVisible: Boolean,
+    chartExtend: Object,
     colors: {
       type: Array,
       default: () => {
@@ -62,17 +71,21 @@ export default {
   },
   data () {
     return {
-
+      dataEmpty: false
     }
   },
   watch: {
     dataSource (newVal) {
       this.$refs.mychart.echarts.resize()
+      this.dataEmpty = !newVal.chartData.rows.length
     },
     commentWidth (newVal) {
       this.$refs.mychart.echarts.resize()
     },
     commentHeight (vewVal) {
+      this.$refs.mychart.echarts.resize()
+    },
+    title () {
       this.$refs.mychart.echarts.resize()
     }
   }
