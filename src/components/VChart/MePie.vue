@@ -7,11 +7,10 @@
     height="100%"
     :chartSettings="chartSettings"
     :colors="colors"
-    :settings="chartSettings"
+    :settings="dataSource.chartSettings"
     :judge-width="true"
     :data-empty="dataEmpty"
     :grid="grid"
-    :legend-visible="legendVisible"
     :extend="chartExtend"
     ></ve-pie>
   </div>
@@ -50,7 +49,6 @@ export default {
     commentWidth: Number,
     commentHeight: Number,
     grid: Object,
-    legendVisible: Boolean,
     chartExtend: Object,
     title: String,
     chartSettings: Object,
@@ -58,15 +56,13 @@ export default {
       type: Array,
       default: () => {
         return [
-          '#61a0a8',
-          '#d48265',
-          '#91c7ae',
-          '#749f83',
-          '#ca8622',
-          '#bda29a',
-          '#6e7074',
-          '#546570',
-          '#c4ccd3']
+          '#5AB1EF',
+          '#FA6E86',
+          '#FFB980',
+          '#0167A6',
+          '#C4B4E4',
+          '#1BD4AE'
+        ]
       }
     }
   },

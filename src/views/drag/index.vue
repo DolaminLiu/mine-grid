@@ -207,13 +207,10 @@ export default {
         }
       })
       this.itemList = list
-      console.log(this.itemList)
     },
     resize () {
       const dom = document.getElementsByClassName('scroll-tent')
       const height = dom[0].scrollHeight
-      console.log(dom[0].offsetHeight)
-      console.log(dom[0].offsetWidth)
       dom[0].scrollTop = height
     },
     deleteItem (item) {
@@ -231,11 +228,9 @@ export default {
             this.$set(ele, 'active', false)
           }
         })
-        console.log(this.itemList)
       })
     },
     copyItem (item) {
-      console.log(item)
       // console.log(item.width)
       // console.log(item.height)
       const list = this.itemList.map(ele => {

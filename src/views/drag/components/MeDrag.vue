@@ -109,7 +109,6 @@ export default {
       // this.$emit('resize')
     },
     onActivated () {
-      console.log(this.thisItem)
       // this.active = 'click-active'
       this.$emit('onActivated', this.thisItem)
     },

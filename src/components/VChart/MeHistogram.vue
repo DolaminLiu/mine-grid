@@ -1,6 +1,6 @@
 <template>
   <div class="chartcontainer" style="width:100%;height:100%">
-    <ve-bar
+    <ve-histogram
     ref="mychart"
     :data="dataSource.chartData"
     width="100%"
@@ -8,15 +8,15 @@
     :colors="colors"
     :judge-width="true"
     :data-empty="dataEmpty"
-    :grid="grid"
     :settings="dataSource.chartSettings"
+    :grid="grid"
     :extend="chartExtend"
-    ></ve-bar>
+    ></ve-histogram>
   </div>
 </template>
 
 <script>
-import VeBar from 'v-charts/lib/bar.common'
+import VeHistogram from 'v-charts/lib/histogram.common'
 export default {
   props: {
     dataSource: {
@@ -63,7 +63,7 @@ export default {
     }
   },
   components: {
-    VeBar
+    VeHistogram
   },
   data () {
     return {

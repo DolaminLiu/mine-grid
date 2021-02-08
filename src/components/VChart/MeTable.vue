@@ -1,61 +1,214 @@
-<template>
-  <div ref="MeTable" class="my-table">
-    <span v-for="item in dataSource.chartData.columns" :key="item.key">
-      {{item}}
-    </span>
-  </div>
-</template>
-
 <script>
+import { client } from '@/utils/request'
+
 export default {
+  name: 'MyTable',
   props: {
-    dataSource: {
+    rowKey: [String, Function],
+    rowSelection: Object,
+    apiPath: {
+      type: String,
+      default: ''
+    },
+    bordered: {
+      type: Boolean,
+      default: false
+    },
+    param: Object,
+    scrollThis: {
+      type: Object
+      // default: () => {
+      //   return { x: '100%' }
+      // }
+    },
+    size: {
+      type: String,
+      default: 'middle'
+    },
+    dataSourceProp: {
       type: Object,
       default: () => {
-        return {
-          title: '表格',
-          index: 3,
-          components: 'MeTable',
-          type: 'table',
-          width: 200,
-          height: 200,
-          x: 630,
-          key: 'ops',
-          chartData: {
-            columns: ['日期', '访问用户', '下单用户2', '下单率2'],
-            rows: [
-              { '日期': '1/1', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
-              { '日期': '1/2', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
-              { '日期': '1/3', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
-              { '日期': '1/4', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
-              { '日期': '1/5', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
-              { '日期': '1/6', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
-            ]
-          }
-        }
+        return {}
       }
     },
-    commentWidth: String,
-    commentHeight: String,
-    chartSettings: String,
-    colors: {
+    columns: {
       type: Array,
       default: () => {
-        return [
-          '#61a0a8',
-          '#d48265',
-          '#91c7ae',
-          '#749f83',
-          '#ca8622',
-          '#bda29a',
-          '#6e7074',
-          '#546570',
-          '#c4ccd3']
+        return []
       }
     }
+  },
+  data () {
+    return {
+      parameter: {},
+      loading: false,
+      dataSource: [],
+      scroll: { x: '100%' }
+    }
+  },
+  mounted () {
+    this.scroll = this.scrollThis
+    if (this.columns.length !== 0) {
+      this.dataSource = this.dataSourceProp.source
+    }
+  },
+  computed: {
+    pagination () {
+      const source = this.dataSourceProp
+      const totalNum = this.dataSourceProp.columns.length === 0 ? 0 : this.dataSource.length
+
+      const obj = {
+        total: totalNum,
+        pageSize: source.pageSize,
+        showSizeChanger: false,
+        showTotal: total => `共 ${totalNum} 条`, // 分页中显示总的数据
+        showSizeChange: () => { this.handlePaginationSizeChange() }
+      }
+      return obj
+    }
+  },
+  watch: {
+    param (newVal) {
+      const { pageSize } = this.pagination
+      this.parameter = Object.assign({ page: 1, page_size: pageSize }, newVal)
+    },
+    parameter (newVal) {
+      this.loading = true
+      this.dataSource = []
+      this.fetch(newVal)
+    },
+    columns (newVal) {
+      console.log(newVal)
+      if (newVal.length !== 0) {
+        this.dataSource = this.dataSourceProp.source
+      }
+    }
+    // dataSourceProp (newVal) {
+    //   if (this.columns.length !== 0) {
+    //     this.dataSource = newVal.source
+    //   }
+    // }
+  },
+  methods: {
+    fetch (data) {
+      const { apiPath } = this
+      this.loading = true
+      this.dataSource = []
+      this.$emit('query', [])
+      this.pagination.total = 0
+      client.post(apiPath, { data }).then(res => {
+        const { data } = res
+        const { paginator } = res.data
+        const pagination = { ...this.pagination }
+        this.loading = false
+
+        // Read total count and page size from server
+        paginator && (pagination.pageSize = Number(paginator.pageSize))
+        paginator && (pagination.total = Number(paginator.totalCount))
+        this.dataSource = data.data
+        //  返回所有请求数据
+        this.pagination = pagination
+
+        this.$emit('fecthAllData', this.dataSource)
+      }).catch(() => {
+        this.loading = false
+      })
+    },
+    handleTableChange (pagination, filters, sorter) {
+      const parameter = { ...this.parameter }
+      Object.assign(parameter, {
+        sort: sorter.order && sorter.field,
+        sort_type: sorter.field && (sorter.order === 'ascend' ? 'asc' : 'desc'),
+        page: pagination.current,
+        page_size: pagination.pageSize
+      })
+      this.parameter = parameter
+      this.pagination = pagination
+    },
+    handlePaginationChange (page, pageSize) {
+      const parameter = { ...this.parameter }
+      const pagination = {
+        ...this.pagination,
+        current: page,
+        pageSize: pageSize
+      }
+      Object.assign(parameter, {
+        page: page,
+        page_size: pageSize
+      })
+      this.parameter = parameter
+      this.pagination = pagination
+    },
+    handlePaginationSizeChange (page, pageSize) {
+      const parameter = { ...this.parameter }
+      const pagination = {
+        ...this.pagination,
+        current: page,
+        pageSize: pageSize
+      }
+      Object.assign(parameter, {
+        page: page,
+        page_size: pageSize
+      })
+      this.parameter = parameter
+      this.pagination = pagination
+    }
+  },
+  render () {
+    const { loading, dataSource, pagination, size, rowKey, scroll, columns, rowSelection, bordered } = this
+    const props = { loading, dataSource, pagination, size, rowKey, scroll, columns, rowSelection, bordered }
+    return (
+      <div class='my-smart-table'>
+        <a-table {...{ props, scopedSlots: { ...this.$scopedSlots } }} onChange={this.handleTableChange}>
+          { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>)) }
+        </a-table>
+      </div>
+    )
   }
 }
 </script>
 
-<style>
+<style lang="less">
+.ant-table {
+  font-size: 12px;
+}
+  .ant-table-middle {
+    .ant-table-thead {
+      tr {
+        th {
+          padding: 5px !important;
+        }
+      }
+    }
+  }
+  .my-smart-table {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: auto;
+    .ant-table-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: auto;
+      position: relative;
+    }
+    .ant-pagination {
+      display: flex;
+      justify-content: flex-end;
+      padding: 15px 20px;
+    }
+    .ant-spin-container {
+      position: static;
+    }
+    .ant-table-placeholder {
+      border: none;
+    }
+    .ant-table-pagination.ant-pagination {
+      margin: 0;
+    }
+    td {
+      padding: 8px 5px !important;
+    }
+  }
 </style>

@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     onActivated (item) {
-      console.log(item)
+      // console.log(item)
     }
   }
 }

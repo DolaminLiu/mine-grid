@@ -9,7 +9,7 @@
     :judge-width="true"
     :data-empty="dataEmpty"
     :grid="grid"
-    :legend-visible="legendVisible"
+    :settings="dataSource.chartSettings"
     :extend="chartExtend"
     ></ve-line>
   </div>
@@ -64,7 +64,6 @@ export default {
       }
     },
     grid: Object,
-    legendVisible: Boolean,
     chartExtend: Object
   },
   components: {

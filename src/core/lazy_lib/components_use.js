@@ -15,6 +15,7 @@ import {
   Button,
   Switch,
   Radio,
+  Tree,
   Checkbox,
   Select,
   Card,
@@ -58,6 +59,7 @@ Vue.use(Input)
 Vue.use(InputNumber)
 Vue.use(Button)
 Vue.use(Switch)
+Vue.use(Tree)
 Vue.use(Radio)
 Vue.use(Checkbox)
 Vue.use(Collapse)

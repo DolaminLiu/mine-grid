@@ -25,6 +25,16 @@ const constantRouterMap = [
     path: '/grid',
     name: 'grid',
     component: () => import('@/views/griditem')
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('@/views/test')
+  },
+  {
+    path: '/usage',
+    name: 'usage',
+    component: () => import('@/views/usage')
   }
 ]
 
