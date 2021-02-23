@@ -49,21 +49,20 @@ export default {
           name: '已开通主题',
           value: '0',
           children: [
-            { name: '销售', value: 'order', img: img },
-            { name: '订单明细', value: 'detail', img: img },
-            { name: '发货管理', value: 'post', img: img },
-            { name: '出入库', value: 'warehouse', img: img }
+            { name: '采购', value: 'order', img: img },
+            { name: '库存', value: 'detail', img: img },
+            { name: '销售', value: 'details', img: img },
+            { name: '产品', value: 'post', img: img },
+            { name: '仓库', value: 'warehouse', img: img }
           ]
         },
         {
-          name: '已开通主题',
+          name: '待开通主题',
           value: '1',
           children: [
-            { name: '销售与利润', value: 'profit', img: img },
-            { name: '库存管理', value: 'manage', img: img },
-            { name: '进销存', value: 'save', img: img },
-            { name: '会员', value: 'customer', img: img },
-            { name: '店铺运营', value: 'operate', img: img }
+            { name: '店铺', value: 'order', img: img },
+            { name: '广告', value: 'detailss', img: img },
+            { name: '财务', value: 'profit', img: img }
           ]
         }
       ]

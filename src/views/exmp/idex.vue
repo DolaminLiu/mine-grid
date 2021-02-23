@@ -2,7 +2,7 @@
   <div class="my-drag-layout">
     <div class="head">
       <a-input
-        placeholder="请输入报表名称..."
+        placeholder="请输入大屏名称..."
         class="screen-name"
         v-model="screen_name"
         :maxLength="20"
@@ -376,6 +376,81 @@ export default {
     },
     changeTab (e) {
       this.currentTab = e
+    },
+    changeFilter (source) { // 选择表格列
+      const { type, data } = source
+      if (type === '4') { // 表格
+        this.layoutData.map(item => {
+          if (this.currentItem.i === item.i) {
+            const res = data.map(ele => {
+              if (ele.hasSort || ele.hasSort === '') {
+                return {
+                  title: ele.editName,
+                  dataIndex: ele.name,
+                  name: ele.name,
+                  align: ele.align,
+                  sorter: true,
+                  sortName: '',
+                  symbol: ele.symbol,
+                  width: Number(ele.width),
+                  id: ele.id
+                }
+              } else {
+                return {
+                  title: ele.editName,
+                  dataIndex: ele.name,
+                  name: ele.name,
+                  align: ele.align,
+                  width: Number(ele.width),
+                  id: ele.id,
+                  symbol: ele.symbol
+                }
+              }
+            })
+
+            this.$set(item, 'columns', res)
+            this.$set(item, 'rows', data)
+          }
+        })
+      }
+    },
+    modifyItemCol (data) { // 编辑列属性
+      console.log(data)
+      this.layoutData.map(item => {
+        if (this.currentItem.i === item.i) {
+          const { columns } = item
+          const res = columns.map(ele => {
+            const _res = data.res
+            if (ele.id === _res.id) {
+              if (data.type === 'sort') {
+                const { sorter, sortName, symbol, ...others } = ele
+                return {
+                  sorter: _res.sortName !== '',
+                  sortName: _res.sortName,
+                  symbol: _res.symbol,
+                  // sortDirections: _res.sortDirections,
+                  ...others
+                }
+              } else {
+                const { align, title, width, symbol, ...others } = ele
+                return {
+                  align: _res.align,
+                  title: _res.editName,
+                  width: Number(_res.width),
+                  symbol: _res.symbol,
+                  ...others
+                }
+              }
+            } else {
+              return {
+                ...ele
+              }
+            }
+          })
+          console.log(res)
+          this.$set(item, 'columns', res)
+        }
+      })
     }
   },
   created () {

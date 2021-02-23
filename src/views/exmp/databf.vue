@@ -17,13 +17,13 @@
             <transition-group>
               <li
                 class="criterion"
-                :class="[{'e-active': currentAttr.dataIndex === item.dataIndex ? true : false}, {'zb-bk': item.type === 'zb' ? true : false}]"
+                :class="[{'e-active': currentAttr.name === item.name ? true : false}, {'zb-bk': item.type === 'zb' ? true : false}]"
                 v-for="item in filterArr4"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr( 'columns' ,item)">
+                <div class="meta type-dimension" @click="editAttr(item)">
                   <div>
-                    {{ item.dataIndex }}
+                    {{ item.name }}
                     <a-icon type="arrow-down" v-if="item.sortName && item.sortName === 'descend'" style="color:rgb(82, 196, 26)"/>
                     <a-icon type="arrow-up" v-if="item.sortName && item.sortName === 'ascend'"  style="color:rgb(82, 196, 26)"/>
                   </div>
@@ -53,12 +53,12 @@
             <transition-group>
               <li
                 class="criterion"
-                :class="[{'e-active': currentAttr.dataIndex === item.dataIndex ? true : false}]"
+                :class="[{'e-active': currentAttr.name === item.name ? true : false}]"
                 v-for="item in filterArr1"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr('weidu', item)">
-                  {{ item.dataIndex }}
+                <div class="meta type-dimension">
+                  {{ item.name }}
                   <a-icon type="delete" class="delete" @click="deleteItem(1, item)"/>
                 </div>
               </li>
@@ -84,12 +84,12 @@
             <transition-group>
               <li
                 class="criterion"
-                :class="[{'e-active': currentAttr.dataIndex === item.dataIndex ? true : false}, {'zb-bk': item.type === 'zb' ? true : false}]"
+                :class="[{'e-active': currentAttr.name === item.name ? true : false}, {'zb-bk': item.type === 'zb' ? true : false}]"
                 v-for="item in filterArr2"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr('zhibiao', item)">
-                  {{ item.dataIndex }}
+                <div class="meta type-dimension">
+                  {{ item.name }}
                   <a-icon type="delete" class="delete"  @click="deleteItem(2, item)"/>
                 </div>
               </li>
@@ -121,12 +121,12 @@
             <transition-group>
               <li
                 class="criterion"
-                :class="currentAttr.dataIndex === item.dataIndex ? 'e-active' : ''"
+                :class="currentAttr.name === item.name ? 'e-active' : ''"
                 v-for="item in filterArr3"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr('guolv', item)">
-                  {{ item.dataIndex }}
+                <div class="meta type-dimension">
+                  {{ item.name }}
                   <a-icon type="delete" class="delete"  @click="deleteItem(3, item)"/>
                 </div>
               </li>
@@ -135,20 +135,6 @@
           <div class="box-placeholder">
             拖拽右侧字段进行添加
           </div>
-        </div>
-      </div>
-      <div class="module-left__con" v-if="currentItem.type !== 'table'">
-        <div class="grid-box module-left__hd">
-          <a-icon type="cluster" />数量
-        </div>
-        <div style="dispaly:flex">
-          <span>结果展示</span>
-          <a-input
-          type="number"
-          style="width: 100px;margin-left: 20px"
-          v-model="currentItem.size"
-          @change="changeBasic('size')"
-          />
         </div>
       </div>
     </div>
@@ -199,7 +185,7 @@
                           sort: false,
                         }"
                       >
-                        <li eid="acyion" class="item droppable" @click="showChildren('1', item)">
+                        <li eid="acyion" class="item droppable" @click="showChildren(item)">
                           <div class="node">
                             <a-icon
                               class="node-icon"
@@ -216,7 +202,7 @@
                               :src="item.img"
                               style="height: 15px; width: 15px"
                             />
-                            {{ item.dataIndex }}
+                            {{ item.name }}
                           </div>
                         </li>
                       </draggable>
@@ -251,7 +237,7 @@
                               class="type-icon"
                               style="height: 15px; width: 15px"
                             />
-                            {{ ele.dataIndex }}
+                            {{ ele.name }}
                           </div>
                       </draggable>
                       </li>
@@ -290,7 +276,7 @@
                         tag="ul"
                         class="bi-tree"
                       >
-                        <li eid="acyion" class="item droppable" @click="showChildren('2', item)">
+                        <li eid="acyion" class="item droppable" @click="showChildren(item)">
                           <div class="node" style="cursor: auto;">
                             <a-icon
                               class="node-icon"
@@ -307,7 +293,7 @@
                               :src="item.img"
                               style="height: 15px; width: 15px"
                             />
-                            {{ item.dataIndex }}
+                            {{ item.name }}
                           </div>
                         </li>
                       </ul>
@@ -342,7 +328,7 @@
                               class="type-icon"
                               style="height: 15px; width: 15px"
                             />
-                            {{ ele.dataIndex }}
+                            {{ ele.name }}
                           </div>
                       </draggable>
                       </li>
@@ -360,7 +346,7 @@
       </div>
     </div>
 
-    <edit-attr :currentAttr="currentAttr" ref="EditAttrModel" @modifyItemCol="modifyItemCol"/>
+    <edit-attr :currentAttr="currentAttr" :currentItem="currentItem" ref="EditAttr" @modifyItemCol="modifyItemCol"/>
   </div>
 </template>
 
@@ -391,106 +377,66 @@ export default {
       themeWeidu: [],
       themeWeiduDefault: [
         {
-          dataIndex: '日期',
-          title: '日期',
+          name: '日期',
+          editName: '日期',
           type: 'wd',
           width: 'auto',
           align: 'left',
           img: img,
           open: true,
-          hasSort: true,
-          sortName: '0',
-          valType: '1',
-          valWay: '1',
-          valRange: '',
+          symbol: '日期',
           id: 1,
-          format: '1',
-          formatOptions: [
-            { title: 'YYYY-MM-DD', value: '1' },
-            { title: 'YYYY年MM月DD日', value: '2' }
-          ],
           children: [
-            { dataIndex: '年',
-              title: '年',
-              hasSort: true,
-              valType: '1',
-              valWay: '1',
-              valRange: '',
-              sortName: '0',
-              type: 'wd',
-              width: 'auto',
-              align: 'left',
-              id: 2,
-              img: img },
-            // { dataIndex: '季度', title: '季度', type: 'wd', width: 'auto', align: 'left', symbol: '季度', id: 3, img: img, default: ['2021Q1', '2021Q2', '2021Q3', '2021Q4'] },
-            { dataIndex: '月',
-              title: '月',
-              hasSort: true,
-              sortName: '0',
-              type: 'wd',
-              width: 'auto',
-              align: 'left',
-              valType: '1',
-              valWay: '1',
-              valRange: '',
-              id: 4,
-              img: img,
-              format: '',
-              formatOptions: [
-                { title: 'YYYYMM', value: '1' },
-                { title: 'YYYY-MM', value: '2' },
-                { title: 'YYYY年MM月', value: '3' },
-                { title: 'MM月', value: '4' }
-              ] }
+            { name: '年', editName: '年', type: 'wd', width: 'auto', align: 'left', id: 2, img: img, default: ['2001', '2002', '2003', '2004'] },
+            { name: '季度', editName: '季度', type: 'wd', width: 'auto', align: 'left', symbol: '季度', id: 3, img: img, default: ['2021Q1', '2021Q2', '2021Q3', '2021Q4'] },
+            { name: '月', editName: '月', type: 'wd', width: 'auto', align: 'left', symbol: '月', id: 4, img: img, default: ['2021-01', '2021-02', '2021-03', '2021-04'] }
           ]
         },
-        { dataIndex: '款式名称', title: '款式名称', type: 'wd', width: 'auto', align: 'left', id: 5, img: img },
-        { dataIndex: '仓库sku', title: '仓库sku', type: 'wd', width: 'auto', align: 'left', id: 6, img: img },
-        { dataIndex: '部门名称', title: '部门名称', type: 'wd', width: 'auto', align: 'left', id: 7, img: img },
-        { dataIndex: '团队', title: '团队', type: 'wd', width: 'auto', align: 'left', id: 8, img: img },
-        { dataIndex: '产品一级品类', title: '产品一级品类', type: 'wd', width: 'auto', align: 'left', id: 9, img: img },
-        { dataIndex: '产品二级品类', title: '产品二级品类', type: 'wd', width: 'auto', align: 'left', id: 10, img: img },
-        { dataIndex: '产品三级品类', title: '产品三级品类', type: 'wd', width: 'auto', align: 'left', id: 11, img: img },
-        { dataIndex: '产品名称', title: '产品名称', type: 'wd', width: 'auto', align: 'left', id: 12, img: img }
+        { name: '款式名称', editName: '款式名称', type: 'wd', width: 'auto', align: 'left', id: 5, img: img },
+        { name: '仓库sku', editName: '仓库sku', type: 'wd', width: 'auto', align: 'left', id: 6, img: img },
+        { name: '部门名称', editName: '部门名称', type: 'wd', width: 'auto', align: 'left', id: 7, img: img },
+        { name: '团队', editName: '团队', type: 'wd', width: 'auto', align: 'left', id: 8, img: img },
+        { name: '产品一级品类', editName: '产品一级品类', type: 'wd', width: 'auto', align: 'left', id: 9, img: img },
+        { name: '产品二级品类', editName: '产品二级品类', type: 'wd', width: 'auto', align: 'left', id: 10, img: img },
+        { name: '产品三级品类', editName: '产品三级品类', type: 'wd', width: 'auto', align: 'left', id: 11, img: img },
+        { name: '产品名称', editName: '产品名称', type: 'wd', width: 'auto', align: 'left', id: 12, img: img }
       ],
       themeZb: [],
       themeZbDefault: [
         {
-          dataIndex: '销售',
+          name: '销售',
           img: img,
           open: true,
           id: 13,
           children: [
-            { dataIndex: '销量', title: '销量', type: 'zb', width: 'auto', align: 'left', symbol: '数量', format: '1', hasSort: false, sortName: '0', id: 14, img: img },
-            { dataIndex: '销售额_人民币', title: '销售额_人民币', type: 'zb', width: 'auto', symbol: '数值', format: '1', align: 'left', hasSort: true, sortName: '0', id: 15, img: img },
-            { dataIndex: '销售额_美元', title: '销售额_美元', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 16, img: img }
+            { name: '产品销售', editName: '产品销售', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 14, img: img },
+            { name: '销售额_人民币', editName: '销售额_人民币', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 15, img: img },
+            { name: '销售额_美元', editName: '销售额_美元', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 16, img: img }
           ]
         },
         {
-          dataIndex: '利润',
+          name: '利润',
           img: img,
           open: true,
           id: 17,
-          symbol: '数值',
-          format: '1',
           children: [
-            { dataIndex: '营业利润_人民币', title: '营业利润_人民币', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 18, img: img },
-            { dataIndex: '营业利润_美元', title: '营业利润_美元', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 19, img: img },
-            { dataIndex: '营业利润率(按美元)', title: '营业利润率(按美元)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 20, img: img }
+            { name: '营业利润_人民币', editName: '营业利润_人民币', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 18, img: img },
+            { name: '营业利润_美元', editName: '营业利润_美元', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 19, img: img },
+            { name: '营业利润率(按美元)', editName: '营业利润率(按美元)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 20, img: img }
           ]
         },
         {
-          dataIndex: '退款',
+          name: '退款',
           img: img,
           open: true,
           id: 21,
           children: [
-            { dataIndex: '退款费用_人民币(按退款时间)', title: '退款费用_人民币(按退款时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 22, img: img },
-            { dataIndex: '退款费用_美元(按退款时间)', title: '退款费用_美元(按退款时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 23, img: img },
-            { dataIndex: '退款率(按退款时间和美元)', title: '退款率(按退款时间和美元)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 24, img: img },
-            { dataIndex: '退款费用_人民币(出库时间)', title: '退款费用_人民币(出库时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 25, img: img },
-            { dataIndex: '退款费用_美元(出库时间)', title: '退款费用_美元(出库时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 26, img: img },
-            { dataIndex: '退款率(按出库时间和美元)', title: '退款率(按出库时间和美元)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 27, img: img }
+            { name: '退款费用_人民币(按退款时间)', editName: '退款费用_人民币(按退款时间)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 22, img: img },
+            { name: '退款费用_美元(按退款时间)', editName: '退款费用_美元(按退款时间)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 23, img: img },
+            { name: '退款率(按退款时间和美元)', editName: '退款率(按退款时间和美元)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 24, img: img },
+            { name: '退款费用_人民币(出库时间)', editName: '退款费用_人民币(出库时间)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 25, img: img },
+            { name: '退款费用_美元(出库时间)', editName: '退款费用_美元(出库时间)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 26, img: img },
+            { name: '退款率(按出库时间和美元)', editName: '退款率(按出库时间和美元)', type: 'zb', width: 'auto', align: 'left', sorter: false, sortName: '', sortDirections: [''], id: 27, img: img }
           ]
         }
       ],
@@ -509,48 +455,28 @@ export default {
   watch: {
     currentItem (newVal) {
       if (newVal.type === 'table') {
-        this.filterArr4 = newVal.columns
-      } else {
-        this.filterArr1 = newVal.weidu
-        this.filterArr2 = newVal.zhibiao
+        this.filterArr4 = newVal.rows
       }
-      this.filterArr3 = newVal.guolv
     },
     filterArr1 (newVal) {
-      // console.log('改了arr1')
       if (newVal.length > 0) {
         this.weiduAllLimit = ''
       } else {
         this.weiduAllLimit = 'weiduAll'
       }
-
-      const obj = {
-        type: 'weidu',
-        data: newVal
-      }
+      const obj = { type: '1', data: newVal }
       this.$emit('changeFilter', obj)
     },
     filterArr2 (newVal) {
-      console.log('改了arr2')
-      const obj = {
-        type: 'zhibiao',
-        data: newVal
-      }
+      const obj = { type: '2', data: newVal }
       this.$emit('changeFilter', obj)
     },
     filterArr3 (newVal) {
-      const obj = {
-        type: 'guolv',
-        data: newVal
-      }
+      const obj = { type: '3', data: newVal }
       this.$emit('changeFilter', obj)
     },
     filterArr4 (newVal) {
-      // console.log(newVal)
-      const obj = {
-        type: 'columns',
-        data: newVal
-      }
+      const obj = { type: '4', data: newVal }
       this.$emit('changeFilter', obj)
     },
     searchKeyOne (newVal) {
@@ -599,14 +525,14 @@ export default {
     },
     end (e) { // 维度停止拖动
       this.startMove = false
-      this.$refs.EditAttrModel.showEdit = false
+      this.$refs.EditAttr.showEdit = false
     },
     start2 (e) { // 指标开始拖动
       this.startMove2 = true
     },
     end2 (e) { // 指标停止拖动
       this.startMove2 = false
-      this.$refs.EditAttrModel.showEdit = false
+      this.$refs.EditAttr.showEdit = false
     },
     // 过滤/表格列拖拽去重
     onMove (e, originalEvent) {
@@ -652,20 +578,12 @@ export default {
         })
       }
     },
-    showChildren (type, item) { // 维度展开子维度
-      if (type === '1') {
-        this.themeWeidu.map((ele) => {
-          if (ele.id === item.id) {
-            this.$set(item, 'open', !item.open)
-          }
-        })
-      } else {
-        this.themeZb.map((ele) => {
-          if (ele.id === item.id) {
-            this.$set(item, 'open', !item.open)
-          }
-        })
-      }
+    showChildren (item) { // 维度展开子维度
+      this.themeWeidu.map((ele) => {
+        if (ele.id === item.id) {
+          this.$set(item, 'open', !item.open)
+        }
+      })
     },
     deleteItem (type, item) {
       this[`filterArr${type}`] = this[`filterArr${type}`].filter(ele => ele.id !== item.id)
@@ -673,13 +591,15 @@ export default {
     changeTheme () {
       this.$emit('changeTheme')
     },
-    editAttr (type, item) {
-      this.currentItem[`${type}`].map(ele => {
-        if (ele.id === item.id) {
-          this.$refs.EditAttrModel.showEditMethods(type)
-          this.currentAttr = ele
-        }
-      })
+    editAttr (item) {
+      this.$refs.EditAttr.showEditMethods(item)
+      this.currentAttr = item
+      // this.currentItem.columns.map(ele => {
+      //   if (ele.id === item.id) {
+      //     this.$refs.EditAttr.showEditMethods(ele)
+      //     this.currentAttr = ele
+      //   }
+      // })
     },
     modifyItemCol (item) {
       if (item.type === 'sort') {
@@ -692,8 +612,8 @@ export default {
       this.$emit('modifyItemCol', item)
     },
     hide () {
-      if (this.$refs.EditAttrModel) {
-        this.$refs.EditAttrModel.hide()
+      if (this.$refs.EditAttr) {
+        this.$refs.EditAttr.hide()
       }
     }
   }

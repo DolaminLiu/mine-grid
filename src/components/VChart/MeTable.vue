@@ -78,9 +78,10 @@ export default {
       this.fetch(newVal)
     },
     columns (newVal) {
-      console.log(newVal)
       if (newVal.length !== 0) {
         this.dataSource = this.dataSourceProp.source
+      } else {
+        this.dataSource = []
       }
     }
     // dataSourceProp (newVal) {
