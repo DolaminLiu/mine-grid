@@ -10,31 +10,50 @@
             v-model="filterArr4"
             tag="ul"
             class="bi-select-tree"
-            :class="[{'droppable': startMove || startMove2 }]"
+            :class="[{ droppable: startMove || startMove2 }]"
             group="weiduAll"
             animation="300"
           >
             <transition-group>
               <li
                 class="criterion"
-                :class="[{'e-active': currentAttr.dataIndex === item.dataIndex ? true : false}, {'zb-bk': item.type === 'zb' ? true : false}]"
+                :class="[
+                  {
+                    'e-active':
+                      currentAttr.dataIndex === item.dataIndex ? true : false,
+                  },
+                  { 'zb-bk': item.type === 'zb' ? true : false },
+                ]"
                 v-for="item in filterArr4"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr( 'columns' ,item)">
+                <div
+                  class="meta type-dimension"
+                  @click="editAttr('columns', item)"
+                >
                   <div>
                     {{ item.dataIndex }}
-                    <a-icon type="arrow-down" v-if="item.sortName && item.sortName === 'descend'" style="color:rgb(82, 196, 26)"/>
-                    <a-icon type="arrow-up" v-if="item.sortName && item.sortName === 'ascend'"  style="color:rgb(82, 196, 26)"/>
+                    <a-icon
+                      type="arrow-down"
+                      v-if="item.sortName && item.sortName === 'descend'"
+                      style="color: rgb(82, 196, 26)"
+                    />
+                    <a-icon
+                      type="arrow-up"
+                      v-if="item.sortName && item.sortName === 'ascend'"
+                      style="color: rgb(82, 196, 26)"
+                    />
                   </div>
-                  <a-icon type="delete" class="delete" @click="deleteItem(4, item)"/>
+                  <a-icon
+                    type="delete"
+                    class="delete"
+                    @click="deleteItem(4, item)"
+                  />
                 </div>
               </li>
             </transition-group>
           </draggable>
-          <div class="box-placeholder">
-            拖拽右侧字段进行添加
-          </div>
+          <div class="box-placeholder">拖拽右侧字段进行添加</div>
         </div>
       </div>
       <div class="module-left__con" v-else>
@@ -46,20 +65,38 @@
             v-model="filterArr1"
             tag="ul"
             class="bi-select-tree"
-            :class="[{'droppable': startMove && weiduAllLimit === 'weiduAll' ? true:false}, {'limit': filterArr1.length > 0 ? true:false}]"
+            :class="[
+              {
+                droppable:
+                  startMove && weiduAllLimit === 'weiduAll' ? true : false,
+              },
+              { limit: filterArr1.length > 0 ? true : false },
+            ]"
             :group="weiduAllLimit"
             animation="300"
           >
             <transition-group>
               <li
                 class="criterion"
-                :class="[{'e-active': currentAttr.dataIndex === item.dataIndex ? true : false}]"
+                :class="[
+                  {
+                    'e-active':
+                      currentAttr.dataIndex === item.dataIndex ? true : false,
+                  },
+                ]"
                 v-for="item in filterArr1"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr('weidu', item)">
+                <div
+                  class="meta type-dimension"
+                  @click="editAttr('weidu', item)"
+                >
                   {{ item.dataIndex }}
-                  <a-icon type="delete" class="delete" @click="deleteItem(1, item)"/>
+                  <a-icon
+                    type="delete"
+                    class="delete"
+                    @click="deleteItem(1, item)"
+                  />
                 </div>
               </li>
             </transition-group>
@@ -79,25 +116,35 @@
             class="bi-select-tree"
             group="zhibiaoAll"
             animation="300"
-            :class="[{'droppable': startMove2 ? true:false}]"
+            :class="[{ droppable: startMove2 ? true : false }]"
           >
             <transition-group>
               <li
                 class="criterion"
-                :class="[{'e-active': currentAttr.dataIndex === item.dataIndex ? true : false}, {'zb-bk': item.type === 'zb' ? true : false}]"
+                :class="[
+                  {
+                    'e-active':
+                      currentAttr.dataIndex === item.dataIndex ? true : false,
+                  },
+                  { 'zb-bk': item.type === 'zb' ? true : false },
+                ]"
                 v-for="item in filterArr2"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr('zhibiao', item)">
-                  {{ item.dataIndex }}
-                  <a-icon type="delete" class="delete"  @click="deleteItem(2, item)"/>
+                <div
+                  class="meta type-dimension"
+                  @click="editAttr('zhibiao', item)"
+                >{{ item.dataIndex }}
+                  <a-icon
+                    type="delete"
+                    class="delete"
+                    @click="deleteItem(2, item)"
+                  />
                 </div>
               </li>
             </transition-group>
           </draggable>
-          <div class="box-placeholder">
-            拖拽右侧字段进行添加
-          </div>
+          <div class="box-placeholder">拖拽右侧字段进行添加</div>
         </div>
       </div>
       <div class="module-left__con">
@@ -109,11 +156,10 @@
             :list="filterArr3"
             tag="ul"
             class="bi-select-tree"
-            :class="[{'droppable': startMove ? true:false}]"
+            :class="[{ droppable: startMove ? true : false }]"
             group="weiduAll"
             animation="300"
             :move="onMove"
-
             dragClass="dragClass"
             ghostClass="ghostClass"
             chosenClass="chosenClass"
@@ -121,33 +167,40 @@
             <transition-group>
               <li
                 class="criterion"
-                :class="currentAttr.dataIndex === item.dataIndex ? 'e-active' : ''"
+                :class="
+                  currentAttr.dataIndex === item.dataIndex ? 'e-active' : ''
+                "
                 v-for="item in filterArr3"
                 :key="item.id"
               >
-                <div class="meta type-dimension" @click="editAttr('guolv', item)">
+                <div
+                  class="meta type-dimension"
+                  @click="editAttr('guolv', item)"
+                >
                   {{ item.dataIndex }}
-                  <a-icon type="delete" class="delete"  @click="deleteItem(3, item)"/>
+                  <a-icon
+                    type="delete"
+                    class="delete"
+                    @click="deleteItem(3, item)"
+                  />
                 </div>
               </li>
             </transition-group>
           </draggable>
-          <div class="box-placeholder">
-            拖拽右侧字段进行添加
-          </div>
+          <div class="box-placeholder">拖拽右侧字段进行添加</div>
         </div>
       </div>
       <div class="module-left__con" v-if="currentItem.type !== 'table'">
         <div class="grid-box module-left__hd">
           <a-icon type="cluster" />数量
         </div>
-        <div style="dispaly:flex">
+        <div style="dispaly: flex">
           <span>结果展示</span>
           <a-input
-          type="number"
-          style="width: 100px;margin-left: 20px"
-          v-model="currentItem.size"
-          @change="changeBasic('size')"
+            type="number"
+            style="width: 100px; margin-left: 20px"
+            v-model="currentItem.size"
+            @change="changeBasic('size')"
           />
         </div>
       </div>
@@ -155,7 +208,9 @@
 
     <div class="module-right">
       <div class="module-right__hd">
-        <div style="cursor: pointer;" @click="changeTheme"><a-icon type="gold" />订单</div>
+        <div style="cursor: pointer" @click="changeTheme">
+          <a-icon type="gold" />订单
+        </div>
         <div><a-icon type="info-circle" /></div>
       </div>
       <div class="module-right__box">
@@ -195,11 +250,19 @@
                         :move="onMove"
                         :options="{
                           forceFallback: true,
-                          group: { name: 'weiduAll', pull: 'clone', put: false },
+                          group: {
+                            name: 'weiduAll',
+                            pull: 'clone',
+                            put: false,
+                          },
                           sort: false,
                         }"
                       >
-                        <li eid="acyion" class="item droppable" @click="showChildren('1', item)">
+                        <li
+                          eid="acyion"
+                          class="item droppable"
+                          @click="showChildren('1', item)"
+                        >
                           <div class="node">
                             <a-icon
                               class="node-icon"
@@ -215,9 +278,7 @@
                               class="type-icon"
                               :src="item.img"
                               style="height: 15px; width: 15px"
-                            />
-                            {{ item.dataIndex }}
-                          </div>
+                            />{{ item.dataIndex }}</div>
                         </li>
                       </draggable>
                     </div>
@@ -226,34 +287,33 @@
                       v-if="item.children"
                       :style="{ display: item.open ? 'block' : 'none' }"
                     >
-                     <li
-                          eid="acyion"
-                          class="item droppable"
+                      <li eid="acyion" class="item droppable">
+                        <draggable
+                          v-for="(ele, k) in item.children"
+                          :key="ele.id"
+                          :list="Array(themeWeidu[index].children[k])"
+                          class="bi-tree"
+                          :options="{
+                            forceFallback: true,
+                            group: {
+                              name: 'weiduAll',
+                              pull: 'clone',
+                              put: false,
+                            },
+                            sort: false,
+                          }"
+                          @start="start"
+                          @end="end"
+                          animation="300"
+                          :move="onMove"
                         >
-                      <draggable
-                         v-for="(ele, k) in item.children"
-                         :key="ele.id"
-                         :list="Array(themeWeidu[index].children[k])"
-                        class="bi-tree"
-                        :options="{
-                          forceFallback: true,
-                          group: { name: 'weiduAll', pull: 'clone', put: false },
-                          sort: false,
-                        }"
-                        @start="start"
-                        @end="end"
-                        animation="300"
-                        :move="onMove"
-                      >
                           <div class="node">
                             <img
                               :src="ele.img"
                               class="type-icon"
                               style="height: 15px; width: 15px"
-                            />
-                            {{ ele.dataIndex }}
-                          </div>
-                      </draggable>
+                            />{{ ele.dataIndex }}</div>
+                        </draggable>
                       </li>
                     </div>
                   </li>
@@ -286,12 +346,13 @@
                     class="item"
                   >
                     <div class="column">
-                      <ul
-                        tag="ul"
-                        class="bi-tree"
-                      >
-                        <li eid="acyion" class="item droppable" @click="showChildren('2', item)">
-                          <div class="node" style="cursor: auto;">
+                      <ul tag="ul" class="bi-tree">
+                        <li
+                          eid="acyion"
+                          class="item droppable"
+                          @click="showChildren('2', item)"
+                        >
+                          <div class="node" style="cursor: auto">
                             <a-icon
                               class="node-icon"
                               type="down"
@@ -306,9 +367,7 @@
                               class="type-icon"
                               :src="item.img"
                               style="height: 15px; width: 15px"
-                            />
-                            {{ item.dataIndex }}
-                          </div>
+                            />{{ item.dataIndex }}</div>
                         </li>
                       </ul>
                     </div>
@@ -317,34 +376,36 @@
                       v-if="item.children"
                       :style="{ display: item.open ? 'block' : 'none' }"
                     >
-                     <li
-                          eid="acyion"
-                          class="item droppable"
+                      <li eid="acyion" class="item droppable">
+                        <draggable
+                          v-for="(ele, k) in item.children"
+                          :key="ele.id"
+                          :list="Array(themeZb[index].children[k])"
+                          class="bi-tree"
+                          :options="{
+                            forceFallback: true,
+                            group: {
+                              name:
+                                currentItem.type === 'table'
+                                  ? 'weiduAll'
+                                  : 'zhibiaoAll',
+                              pull: 'clone',
+                              put: false,
+                            },
+                            sort: false,
+                          }"
+                          @start="start2"
+                          @end="end2"
+                          animation="300"
+                          :move="onMove2"
                         >
-                      <draggable
-                         v-for="(ele, k) in item.children"
-                         :key="ele.id"
-                         :list="Array(themeZb[index].children[k])"
-                        class="bi-tree"
-                        :options="{
-                          forceFallback: true,
-                          group: { name: currentItem.type === 'table' ? 'weiduAll' : 'zhibiaoAll', pull: 'clone', put: false },
-                          sort: false,
-                        }"
-                        @start="start2"
-                        @end="end2"
-                        animation="300"
-                        :move="onMove2"
-                      >
                           <div class="node">
                             <img
                               :src="ele.img"
                               class="type-icon"
                               style="height: 15px; width: 15px"
-                            />
-                            {{ ele.dataIndex }}
-                          </div>
-                      </draggable>
+                            />{{ ele.dataIndex }}</div>
+                        </draggable>
                       </li>
                     </div>
                   </li>
@@ -360,7 +421,11 @@
       </div>
     </div>
 
-    <edit-attr :currentAttr="currentAttr" ref="EditAttrModel" @modifyItemCol="modifyItemCol"/>
+    <edit-attr
+      :currentAttr="currentAttr"
+      ref="EditAttrModel"
+      @modifyItemCol="modifyItemCol"
+    />
   </div>
 </template>
 
@@ -369,7 +434,14 @@ import EditAttr from './EditAttr'
 import img from '../../../assets/animal.png'
 import draggable from 'vuedraggable'
 export default {
-  props: ['currentItem'],
+  props: {
+    currentItem: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
+  },
   components: {
     draggable,
     EditAttr
@@ -377,6 +449,7 @@ export default {
   data () {
     return {
       weiduAllLimit: 'weiduAll',
+      currentModifyItem: {},
       weiduArr: [],
       zhibiaoArr: [],
       guolvArr: [],
@@ -410,7 +483,8 @@ export default {
             { title: 'YYYY年MM月DD日', value: '2' }
           ],
           children: [
-            { dataIndex: '年',
+            {
+              dataIndex: '年',
               title: '年',
               hasSort: true,
               valType: '1',
@@ -421,9 +495,11 @@ export default {
               width: 'auto',
               align: 'left',
               id: 2,
-              img: img },
+              img: img
+            },
             // { dataIndex: '季度', title: '季度', type: 'wd', width: 'auto', align: 'left', symbol: '季度', id: 3, img: img, default: ['2021Q1', '2021Q2', '2021Q3', '2021Q4'] },
-            { dataIndex: '月',
+            {
+              dataIndex: '月',
               title: '月',
               hasSort: true,
               sortName: '0',
@@ -441,29 +517,129 @@ export default {
                 { title: 'YYYY-MM', value: '2' },
                 { title: 'YYYY年MM月', value: '3' },
                 { title: 'MM月', value: '4' }
-              ] }
+              ]
+            }
           ]
         },
-        { dataIndex: '款式名称', title: '款式名称', type: 'wd', width: 'auto', align: 'left', id: 5, img: img },
-        { dataIndex: '仓库sku', title: '仓库sku', type: 'wd', width: 'auto', align: 'left', id: 6, img: img },
-        { dataIndex: '部门名称', title: '部门名称', type: 'wd', width: 'auto', align: 'left', id: 7, img: img },
-        { dataIndex: '团队', title: '团队', type: 'wd', width: 'auto', align: 'left', id: 8, img: img },
-        { dataIndex: '产品一级品类', title: '产品一级品类', type: 'wd', width: 'auto', align: 'left', id: 9, img: img },
-        { dataIndex: '产品二级品类', title: '产品二级品类', type: 'wd', width: 'auto', align: 'left', id: 10, img: img },
-        { dataIndex: '产品三级品类', title: '产品三级品类', type: 'wd', width: 'auto', align: 'left', id: 11, img: img },
-        { dataIndex: '产品名称', title: '产品名称', type: 'wd', width: 'auto', align: 'left', id: 12, img: img }
+        {
+          dataIndex: '款式名称',
+          title: '款式名称',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 5,
+          img: img
+        },
+        {
+          dataIndex: '仓库SKU',
+          title: '仓库SKU',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 6,
+          img: img
+        },
+        {
+          dataIndex: '部门名称',
+          title: '部门名称',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 7,
+          img: img
+        },
+        {
+          dataIndex: '团队',
+          title: '团队',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 8,
+          img: img
+        },
+        {
+          dataIndex: '产品一级品类',
+          title: '产品一级品类',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 9,
+          img: img
+        },
+        {
+          dataIndex: '产品二级品类',
+          title: '产品二级品类',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 10,
+          img: img
+        },
+        {
+          dataIndex: '产品三级品类',
+          title: '产品三级品类',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 11,
+          img: img
+        },
+        {
+          dataIndex: '产品名称',
+          title: '产品名称',
+          type: 'wd',
+          width: 'auto',
+          align: 'left',
+          id: 12,
+          img: img
+        }
       ],
       themeZb: [],
-      themeZbDefault: [
+      themeZbDefault: [],
+      themeZbDefaults: [
         {
           dataIndex: '销售',
           img: img,
           open: true,
           id: 13,
           children: [
-            { dataIndex: '销量', title: '销量', type: 'zb', width: 'auto', align: 'left', symbol: '数量', format: '1', hasSort: false, sortName: '0', id: 14, img: img },
-            { dataIndex: '销售额_人民币', title: '销售额_人民币', type: 'zb', width: 'auto', symbol: '数值', format: '1', align: 'left', hasSort: true, sortName: '0', id: 15, img: img },
-            { dataIndex: '销售额_美元', title: '销售额_美元', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 16, img: img }
+            {
+              dataIndex: '销量',
+              title: '销量',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              symbol: '数量',
+              format: '1',
+              hasSort: false,
+              sortName: '0',
+              id: 14,
+              img: img
+            },
+            {
+              dataIndex: '销售额_人民币',
+              title: '销售额_人民币',
+              type: 'zb',
+              width: 'auto',
+              symbol: '数值',
+              format: '1',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 15,
+              img: img
+            },
+            {
+              dataIndex: '销售额_美元',
+              title: '销售额_美元',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 16,
+              img: img
+            }
           ]
         },
         {
@@ -474,9 +650,39 @@ export default {
           symbol: '数值',
           format: '1',
           children: [
-            { dataIndex: '营业利润_人民币', title: '营业利润_人民币', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 18, img: img },
-            { dataIndex: '营业利润_美元', title: '营业利润_美元', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 19, img: img },
-            { dataIndex: '营业利润率(按美元)', title: '营业利润率(按美元)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 20, img: img }
+            {
+              dataIndex: '营业利润_人民币',
+              title: '营业利润_人民币',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 18,
+              img: img
+            },
+            {
+              dataIndex: '营业利润_美元',
+              title: '营业利润_美元',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 19,
+              img: img
+            },
+            {
+              dataIndex: '营业利润率(按美元)',
+              title: '营业利润率(按美元)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 20,
+              img: img
+            }
           ]
         },
         {
@@ -485,12 +691,72 @@ export default {
           open: true,
           id: 21,
           children: [
-            { dataIndex: '退款费用_人民币(按退款时间)', title: '退款费用_人民币(按退款时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 22, img: img },
-            { dataIndex: '退款费用_美元(按退款时间)', title: '退款费用_美元(按退款时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 23, img: img },
-            { dataIndex: '退款率(按退款时间和美元)', title: '退款率(按退款时间和美元)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 24, img: img },
-            { dataIndex: '退款费用_人民币(出库时间)', title: '退款费用_人民币(出库时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 25, img: img },
-            { dataIndex: '退款费用_美元(出库时间)', title: '退款费用_美元(出库时间)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 26, img: img },
-            { dataIndex: '退款率(按出库时间和美元)', title: '退款率(按出库时间和美元)', type: 'zb', width: 'auto', align: 'left', hasSort: true, sortName: '0', id: 27, img: img }
+            {
+              dataIndex: '退款费用_人民币(按退款时间)',
+              title: '退款费用_人民币(按退款时间)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 22,
+              img: img
+            },
+            {
+              dataIndex: '退款费用_美元(按退款时间)',
+              title: '退款费用_美元(按退款时间)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 23,
+              img: img
+            },
+            {
+              dataIndex: '退款率(按退款时间和美元)',
+              title: '退款率(按退款时间和美元)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 24,
+              img: img
+            },
+            {
+              dataIndex: '退款费用_人民币(出库时间)',
+              title: '退款费用_人民币(出库时间)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 25,
+              img: img
+            },
+            {
+              dataIndex: '退款费用_美元(出库时间)',
+              title: '退款费用_美元(出库时间)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 26,
+              img: img
+            },
+            {
+              dataIndex: '退款率(按出库时间和美元)',
+              title: '退款率(按出库时间和美元)',
+              type: 'zb',
+              width: 'auto',
+              align: 'left',
+              hasSort: true,
+              sortName: '0',
+              id: 27,
+              img: img
+            }
           ]
         }
       ],
@@ -499,15 +765,46 @@ export default {
       searchKeyTwo: '',
       themeTab: '1',
       currentAttr: {} // 当前选择的编辑维度/指标
-
     }
   },
   mounted () {
+    const add = {
+      type: '', // 图形类型
+      chartWidth: '2', // 折线宽度
+      chartDataWay: '1', // 聚合
+      order: '', // 排序
+      area: false, // 面积图
+      smooth: false, // 平滑
+      chartSymbol: '', // 标记图形
+      symbolSize: 6, // 标记图形大小
+      chartLabel: false, // 是否显示标签
+      labelPosition: '', // 标签位置
+      labelFormat: '0' // 标签格式
+    }
+    this.themeZbDefault = this.themeZbDefaults.map(item => {
+      const { children, ...other } = item
+      const child = children.map(ele => {
+        return {
+          ...ele,
+          ...add
+        }
+      })
+      return {
+        children: child,
+        ...other
+      }
+    })
     this.themeWeidu = this.themeWeiduDefault
     this.themeZb = this.themeZbDefault
+    this.currentModifyItem = this.currentItem
   },
   watch: {
     currentItem (newVal) {
+      this.currentModifyItem = newVal
+    },
+    currentModifyItem (newVal) {
+      console.log(newVal)
+      this.currentModifyItem = newVal
       if (newVal.type === 'table') {
         this.filterArr4 = newVal.columns
       } else {
@@ -531,7 +828,7 @@ export default {
       this.$emit('changeFilter', obj)
     },
     filterArr2 (newVal) {
-      console.log('改了arr2')
+      // console.log('改了arr2')
       const obj = {
         type: 'zhibiao',
         data: newVal
@@ -557,7 +854,7 @@ export default {
       if (newVal === '') {
         this.themeWeidu = this.themeWeiduDefault
       } else {
-        const res = this.themeWeiduDefault.filter(item => {
+        const res = this.themeWeiduDefault.filter((item) => {
           const re = { ...item }
           return this.filters(re, newVal)
         })
@@ -568,7 +865,7 @@ export default {
       if (newVal === '') {
         this.themeZb = this.themeZbDefault
       } else {
-        const res = this.themeZbDefault.filter(item => {
+        const res = this.themeZbDefault.filter((item) => {
           const re = { ...item }
           return this.filters(re, newVal)
         })
@@ -577,7 +874,7 @@ export default {
     }
   },
   methods: {
-    filters (item, query) {
+    filters (item, query) { // 过滤使拖拽不重复
       if (item.name.indexOf(query) > -1) return true
       if (item.hasOwnProperty('children')) {
         item.children = item.children.filter(function (child) {
@@ -594,17 +891,27 @@ export default {
         return item.name.indexOf(query) > -1
       }
     },
-    start (e) { // 维度开始拖动
+    start (e) {
+      // 维度开始拖动
       this.startMove = true
     },
-    end (e) { // 维度停止拖动
+    end (e) {
+      // 维度停止拖动
       this.startMove = false
       this.$refs.EditAttrModel.showEdit = false
     },
-    start2 (e) { // 指标开始拖动
-      this.startMove2 = true
+    start2 (e) {
+      // 指标开始拖动
+      const moveEle = e.clone.innerText
+      if (this.filterArr2.length !== 0) {
+        const res = this.filterArr2.find((item) => item.dataIndex === moveEle)
+        this.startMove2 = !res
+      } else {
+        this.startMove2 = true
+      }
     },
-    end2 (e) { // 指标停止拖动
+    end2 (e) {
+      // 指标停止拖动
       this.startMove2 = false
       this.$refs.EditAttrModel.showEdit = false
     },
@@ -615,9 +922,9 @@ export default {
       this.moveEle = e.draggedContext.element
       this.moveId = e.draggedContext.element.id
       if (this.currentItem.type === 'table' && this.filterArr4.length !== 0) {
-        res = this.filterArr4.find(item => item.id === this.moveId)
+        res = this.filterArr4.find((item) => item.id === this.moveId)
       } else if (this.filterArr3.length !== 0) {
-        res = this.filterArr3.find(item => item.id === this.moveId)
+        res = this.filterArr3.find((item) => item.id === this.moveId)
       }
       return !res
     },
@@ -629,30 +936,32 @@ export default {
       this.moveId = e.draggedContext.element.id
 
       if (this.filterArr2.length !== 0) {
-        res = this.filterArr2.find(item => item.id === this.moveId)
+        res = this.filterArr2.find((item) => item.id === this.moveId)
       }
       return !res
     },
     changeTab2 (e) {
       this.themeTab = e
     },
-    changeExpand () { // tab展开全部
+    changeExpand () {
+      // tab展开全部
       this.expand = !this.expand
       if (this.themeTab === '1') {
-        this.themeWeidu.map(item => {
+        this.themeWeidu.map((item) => {
           if (item.children) {
             this.$set(item, 'open', this.expand)
           }
         })
       } else {
-        this.themeZb.map(item => {
+        this.themeZb.map((item) => {
           if (item.children) {
             this.$set(item, 'open', this.expand)
           }
         })
       }
     },
-    showChildren (type, item) { // 维度展开子维度
+    showChildren (type, item) {
+      // 维度展开子维度
       if (type === '1') {
         this.themeWeidu.map((ele) => {
           if (ele.id === item.id) {
@@ -667,29 +976,43 @@ export default {
         })
       }
     },
+    // 删除拖入的元素
     deleteItem (type, item) {
-      this[`filterArr${type}`] = this[`filterArr${type}`].filter(ele => ele.id !== item.id)
+      this[`filterArr${type}`] = this[`filterArr${type}`].filter(
+        (ele) => ele.id !== item.id
+      )
+      this.hide()
     },
+    // 改变主题
     changeTheme () {
       this.$emit('changeTheme')
     },
+    // 点击编辑属性弹框
     editAttr (type, item) {
-      this.currentItem[`${type}`].map(ele => {
+      this.currentItem[`${type}`].map((ele) => {
         if (ele.id === item.id) {
           this.$refs.EditAttrModel.showEditMethods(type)
           this.currentAttr = ele
         }
       })
     },
+    // 修改属性
     modifyItemCol (item) {
       if (item.type === 'sort') {
-        this.currentItem.columns.map(ele => {
+        this.currentItem.columns.map((ele) => {
           if (ele.id === item.id) {
             this.$set(ele, 'sortName', item.res.sortName)
           }
         })
       }
       this.$emit('modifyItemCol', item)
+    },
+    changeBasic (name) {
+      const obj = {
+        name: name,
+        res: this.currentItem.size
+      }
+      this.$emit('modifyItemCol', obj)
     },
     hide () {
       if (this.$refs.EditAttrModel) {
@@ -764,18 +1087,18 @@ export default {
       border-radius: 2px;
       -webkit-transition-property: border, background;
       transition-property: border, background;
-      -webkit-transition-duration:.5s;
-      transition-duration: .5s;
-      &.limit >span {
+      -webkit-transition-duration: 0.5s;
+      transition-duration: 0.5s;
+      &.limit > span {
         padding-bottom: 0px;
       }
       &.droppable {
         border-color: #fa8c16;
-        background-color: rgba(250,140,22,.02);
-        -webkit-transition-duration: .5s;
-        transition-duration: .5s;
+        background-color: rgba(250, 140, 22, 0.02);
+        -webkit-transition-duration: 0.5s;
+        transition-duration: 0.5s;
       }
-      &>span {
+      & > span {
         display: block;
         width: 100%;
         overflow-y: auto;
@@ -790,7 +1113,7 @@ export default {
           border: 1px solid #52c41a;
         }
         &.zb-bk {
-          background: rgba(82,196,26,.1);
+          background: rgba(82, 196, 26, 0.1);
         }
         padding: 1px 6px;
         cursor: pointer;
@@ -799,22 +1122,22 @@ export default {
         margin-bottom: 5px;
         .meta {
           color: rgba(0, 0, 0, 0.75);
-        border: 1px solid transparent;
-        border-radius: 2px;
-        line-height: 22px;
-        padding: 4px;
-        position: relative;
-        white-space: nowrap;
-        overflow: hidden;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        &:hover .delete {
-          display: block;
-        }
-        .delete {
-          display: none;
-         }
+          border: 1px solid transparent;
+          border-radius: 2px;
+          line-height: 22px;
+          padding: 4px;
+          position: relative;
+          white-space: nowrap;
+          overflow: hidden;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          &:hover .delete {
+            display: block;
+          }
+          .delete {
+            display: none;
+          }
         }
       }
     }

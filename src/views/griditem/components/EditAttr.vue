@@ -109,17 +109,17 @@
             <a-input
               width="100%"
               v-model="editAttrItem.title"
-              @change="modifyItemCol('name')"
+              @change="modifyItemCol('labelMap', 'settings')"
             />
           </div>
         </div>
-        <div class="item">
+        <div class="item" v-if="editAttrItem.type === 'line' || editAttrItem.type === 'histogram'">
           <div class="tit">系列类型</div>
           <div class="setting">
             <a-select
-              :options="sortOptionsChart"
-              v-model="editAttrItem.sortName"
-              @change="modifyItemCol('sort')"
+              :options="typeOptionsChart"
+              v-model="editAttrItem.type"
+              @change="modifyItemCol('type', 'settings')"
               style="width: 100%"
             />
           </div>
@@ -128,9 +128,9 @@
           <div class="tit">聚合</div>
           <div class="setting">
             <a-select
-              :options="sortOptionsChart"
-              v-model="editAttrItem.sortName"
-              @change="modifyItemCol('sort')"
+              :options="addOptionsChart"
+              v-model="editAttrItem.chartDataWay"
+              @change="modifyItemCol('chartDataWay')"
               style="width: 100%"
             />
           </div>
@@ -138,16 +138,17 @@
         <div class="item">
           <div class="tit"></div>
           <div class="setting">
-            <a-checkbox /> 显示标签
+            <a-checkbox v-model="editAttrItem.chartLabel" @change="changeCheckBoxLabel"/> 显示标签
           </div>
         </div>
         <div class="item">
           <div class="tit">标签格式</div>
           <div class="setting">
-            <a-input
-              width="100%"
-              v-model="editAttrItem.title"
-              @change="modifyItemCol('format')"
+            <a-select
+              style="width: 100%"
+              :options="formatOptionsNumber"
+              v-model="editAttrItem.labelFormat"
+              @change="modifyItemCol('labelFormat', 'extend')"
             />
           </div>
         </div>
@@ -155,45 +156,70 @@
           <div class="tit">排序</div>
           <div class="setting">
             <a-select
-              :options="sortOptionsChart"
-              v-model="editAttrItem.sortName"
-              @change="modifyItemCol('sort')"
+              :options="orderOptionsChart"
+              v-model="editAttrItem.order"
+              @change="modifyItemCol('order', 'extend')"
               style="width: 100%"
             />
           </div>
         </div>
-        <div class="item">
+        <div v-if="editAttrItem.type === 'histogram' && editAttrItem.chartLabel">
+          <div class="item">
+          <div class="tit">标签位置</div>
+          <div class="setting">
+            <a-select
+              :options="positionOptions"
+              v-model="editAttrItem.labelPosition"
+              @change="modifyItemCol('chartLabel', 'extend')"
+              style="width: 100%"
+            />
+          </div>
+        </div>
+        </div>
+        <div v-if="editAttrItem.type === 'line'">
+          <div class="item">
           <div class="tit">粗细</div>
           <div class="setting">
             <a-input
               width="100%"
-              v-model="editAttrItem.title"
-              @change="modifyItemCol('width')"
+              v-model="editAttrItem.chartWidth"
+              @change="modifyItemCol('width', 'settings')"
             />
           </div>
         </div>
         <div class="item">
           <div class="tit"></div>
           <div class="setting">
-            <a-checkbox /> 平滑
+            <a-checkbox v-model="editAttrItem.smooth" @change="changeCheckBoxSmooth"/> 平滑
           </div>
         </div>
         <div class="item">
           <div class="tit"></div>
           <div class="setting">
-            <a-checkbox /> 面积填充
+            <a-checkbox v-model="editAttrItem.area" @change="changeCheckBoxArea"/> 面积填充
           </div>
         </div>
         <div class="item">
           <div class="tit">标记图形</div>
           <div class="setting">
             <a-select
-              :options="sortOptionsChart"
-              v-model="editAttrItem.icon"
-              @change="modifyItemCol('icon')"
+              :options="symbolOptionsChart"
+              v-model="editAttrItem.chartSymbol"
+              @change="modifyItemCol('symbol', 'extend')"
               style="width: 100%"
             />
           </div>
+        </div>
+        <div class="item">
+          <div class="tit">标记大小</div>
+          <div class="setting">
+            <a-input
+              v-model="editAttrItem.symbolSize"
+              @change="modifyItemCol('symbol', 'extend')"
+              style="width: 100%"
+            />
+          </div>
+        </div>
         </div>
       </div>
       <div
@@ -282,10 +308,39 @@ export default {
         { title: '升序', value: '1' },
         { title: '降序', value: '2' }
       ],
+      orderOptionsChart: [
+        { title: '无序', value: '' },
+        { title: '升序', value: 'asc' },
+        { title: '降序', value: 'desc' }
+      ],
       alignOptions: [
         { title: '左', value: 'left', icon: 'pic-left' },
         { title: '中', value: 'center', icon: 'pic-center' },
         { title: '右', value: 'right', icon: 'pic-right' }
+      ],
+      addOptionsChart: [
+        { title: '合计', value: '1' }
+      ],
+      typeOptionsChart: [
+        { title: '线图', value: 'line' },
+        { title: '柱图', value: 'histogram' }
+      ],
+      positionOptions: [
+        { title: '顶部（内）', value: 'insideTop' },
+        { title: '顶部（外）', value: 'top' },
+        { title: '居中', value: 'inside' },
+        { title: '底部', value: 'insideBottom' }
+      ],
+      symbolOptionsChart: [
+        { title: '无', value: 'none' },
+        { title: '空心圆', value: '' },
+        { title: '圆形', value: 'circle' },
+        { title: '矩形', value: 'rect' },
+        { title: '圆角', value: 'roundRect' },
+        { title: '三角形', value: 'triangle' },
+        { title: '菱形', value: 'diamond' },
+        { title: '气泡', value: 'pin' },
+        { title: '箭头', value: 'arrow' }
       ],
       formatOptionsDate: [
         { title: 'YYYY-MM-DD', value: '1' },
@@ -307,12 +362,14 @@ export default {
         { title: '0,0', value: '2' }
       ],
       formatOptionsNumber: [
-        { title: '0', value: '1' },
-        { title: '0,0', value: '2' },
-        { title: '0.00', value: '3' },
-        { title: '0,0.00', value: '4' }
+        { title: '0', value: '0' },
+        { title: '0,0', value: '0,0' },
+        { title: '0.00', value: '0.00' },
+        { title: '0,0.00', value: '0,0.00' },
+        { title: '0%', value: '0%' },
+        { title: '0k', value: '0 a' }
       ],
-      editType: '',
+      editType: '', // zhibiao,weidu,guolv,columns
       editTypeName: ''
     }
   },
@@ -341,11 +398,12 @@ export default {
     }
   },
   methods: {
-    modifyItemCol (setName) {
+    modifyItemCol (setName, extend) {
       const obj = {
         type: this.editType,
         name: setName,
-        res: this.editAttrItem
+        res: this.editAttrItem,
+        rights: extend
       }
       this.$emit('modifyItemCol', obj)
     },
@@ -353,7 +411,6 @@ export default {
       this.showEdit = false
     },
     showEditMethods (type) {
-      console.log(type)
       this.editType = type
       this.showEdit = true
     },
@@ -363,6 +420,42 @@ export default {
       const obj = {
         type: 'align',
         res: res
+      }
+      this.$emit('modifyItemCol', obj)
+    },
+    changeCheckBoxLabel (e) {
+      const res = { ...this.editAttrItem }
+      res.chartLabel = e.target.checked
+      this.editAttrItem = res
+      const obj = {
+        type: this.editType,
+        name: 'chartLabel',
+        res: res,
+        rights: 'extend'
+      }
+      this.$emit('modifyItemCol', obj)
+    },
+    changeCheckBoxArea (e) {
+      const res = { ...this.editAttrItem }
+      res.area = e.target.checked
+      this.editAttrItem = res
+      const obj = {
+        type: this.editType,
+        name: 'area',
+        res: res,
+        rights: 'extend'
+      }
+      this.$emit('modifyItemCol', obj)
+    },
+    changeCheckBoxSmooth (e) {
+      const res = { ...this.editAttrItem }
+      res.smooth = e.target.checked
+      this.editAttrItem = res
+      const obj = {
+        type: this.editType,
+        name: 'smooth',
+        res: res,
+        rights: 'extend'
       }
       this.$emit('modifyItemCol', obj)
     }
@@ -406,7 +499,7 @@ export default {
       }
       .setting {
         flex: 1;
-        margin-left: 20px;
+        margin-left: 10px;
         &.sort {
           display: flex;
           align-items: center;

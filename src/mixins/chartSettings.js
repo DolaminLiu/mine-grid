@@ -45,7 +45,7 @@ export default {
         }
       })
     },
-    changeLegend (type, name) { // 切换图例
+    changeExtend (type, name) { // 切换图例
       this.layoutData.map(item => {
         if (item.i === this.currentItem.i) {
           const { series } = this.currentItem.chartExtend
@@ -173,6 +173,7 @@ export default {
             this.$set(item, `${setName}`, sets)
           }
         })
+        console.log(this.layoutData)
       }
     }
   }

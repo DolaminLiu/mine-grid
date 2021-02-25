@@ -59,7 +59,7 @@
                   :i="item.i"
                   :key="item.i"
                   :class="item.active ? 'click-active' : ''"
-                  @resize="resizeEvent"
+                  @resizedEvent="resizedEvent"
                   @moved="movedEvent"
                 >
                   <drag-item

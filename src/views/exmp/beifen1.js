@@ -1,5 +1,5 @@
+// 到指标配置显示标签
 import dataBaseDefault from '@/utils/chartSource'
-import numerify from 'numerify'
 export default {
   data () {
     return {
@@ -32,8 +32,12 @@ export default {
       let addEle = {}
       if (item.type !== 'table') {
         const ser1 = {
-          label: {},
-          smooth: false,
+          label: {
+            show: true,
+            formatter () {
+              return ''
+            }
+          },
           center: ['50%', '50%']
         }
         // const ser2 = []
@@ -299,6 +303,7 @@ export default {
     },
     changeFilter (source) { // 选择表格列
       const { type, data } = source
+
       this.layoutData.map(lay => {
         if (this.currentItem.i === lay.i) {
           const currentZ = { ...lay }
@@ -385,71 +390,60 @@ export default {
     modifyItemCol (data) { // 编辑列属性
       this.layoutData.map(item => {
         if (this.currentItem.i === item.i) {
-          if (data.name === 'size') {
-            const setting = { ...item.chartSettings }
-            setting.limitShowNum = data.res
-            this.$set(item, 'size', data.res)
-            this.$set(item, 'chartSettings', setting)
-          } else {
-            const res = item[`${data.type}`].map(ele => {
-              const _res = data.res
+          const res = item[`${data.type}`].map(ele => {
+            const _res = data.res
 
-              if (ele.id === _res.id) {
-                if (data.name === 'sort') { // 排序更改
-                  const { sorter, sortName, symbol, ...others } = ele
+            if (ele.id === _res.id) {
+              if (data.name === 'sort') { // 排序更改
+                const { sorter, sortName, symbol, ...others } = ele
+                return {
+                  sorter: _res.sortName !== '0',
+                  sortName: _res.sortName,
+                  symbol: _res.symbol,
+                  ...others
+                }
+              } else { // 其他配置更改
+                if (data.name === 'format') {
+                  this.changeFormat(item, data.res)
+                }
+                if (ele.chartSymbol !== undefined) {
+                  const { type, chartWidth, width, area, smooth, chartSymbol, sortName, chartLabel, title, ...others } = ele
                   return {
-                    sorter: _res.sortName !== '0',
+                    type: _res.type,
+                    title: _res.title,
+                    chartWidth: _res.chartWidth,
+                    width: Number(_res.width),
+                    area: _res.area,
+                    smooth: _res.smooth,
                     sortName: _res.sortName,
+                    chartSymbol: _res.chartSymbol,
+                    chartLabel: _res.chartLabel,
+                    ...others
+                  }
+                } else {
+                  const { align, format, width, symbol, title, ...others } = ele
+                  return {
+                    align: _res.align,
+                    title: _res.title,
+                    format: _res.format,
+                    width: Number(_res.width),
                     symbol: _res.symbol,
                     ...others
                   }
-                } else { // 其他配置更改
-                  if (data.name === 'format') {
-                    this.changeFormat(item, data.res)
-                  }
-                  if (ele.chartSymbol !== undefined) {
-                    const { type, chartWidth, width, area, smooth, chartSymbol, symbolSize, order, sortName, chartLabel, labelFormat, labelPosition, title, ...others } = ele
-                    return {
-                      type: _res.type,
-                      title: _res.title,
-                      chartWidth: _res.chartWidth,
-                      order: _res.order,
-                      labelPosition: _res.labelPosition,
-                      labelFormat: _res.labelFormat,
-                      symbolSize: _res.symbolSize,
-                      width: Number(_res.width),
-                      area: _res.area,
-                      smooth: _res.smooth,
-                      sortName: _res.sortName,
-                      chartSymbol: _res.chartSymbol,
-                      chartLabel: _res.chartLabel,
-                      ...others
-                    }
-                  } else {
-                    const { align, format, width, symbol, title, ...others } = ele
-                    return {
-                      align: _res.align,
-                      title: _res.title,
-                      format: _res.format,
-                      width: Number(_res.width),
-                      symbol: _res.symbol,
-                      ...others
-                    }
-                  }
-                }
-              } else {
-                return {
-                  ...ele
                 }
               }
-            })
-            this.$set(item, data.type, res)
-            if (data.type === 'zhibiao') {
-              if (data.rights === 'extend') {
-                this.changeChartExtend(item, data)
-              } else if (data.rights === 'settings') {
-                this.changeChartSettings(item, data)
+            } else {
+              return {
+                ...ele
               }
+            }
+          })
+          this.$set(item, data.type, res)
+          if (data.type === 'zhibiao') {
+            if (data.rights === 'extend') {
+              this.changeChartExtend(item, data)
+            } else if (data.rights === 'settings') {
+              this.changeChartSettings(item, data)
             }
           }
         }
@@ -473,7 +467,6 @@ export default {
         const ar = []
         item.zhibiao.map(ele => {
           if (ele.type === 'line') {
-            console.log('line')
             ar.push(ele.dataIndex)
           }
         })
@@ -482,72 +475,24 @@ export default {
       this.$set(item, 'chartSettings', result)
     },
     changeChartExtend (item, data) {
-      // const ser = { ...item.chartExtend.series }
+      const ser = { ...item.chartExtend.series }
       const { series, ...other } = item.chartExtend
       let extend = {}
 
-      const serFuc = function (options) {
-        const resul = options.map((ops, index) => {
-          const op = { ...ops }
-          if (ops.type === 'bar') {
-            op.label = {
-              show: item.zhibiao[index].chartLabel,
-              position: item.zhibiao[index].labelPosition,
-              formatter (options) {
-                console.log(options)
-                return numerify(options.data, item.zhibiao[index].labelFormat)
-              }
-            }
-          } else if (ops.type === 'line') {
-            op.label = {
-              show: item.zhibiao[index].chartLabel,
-              position: item.zhibiao[index].labelPosition,
-              offset: [0, -15],
-              formatter (options) {
-                console.log(options)
-                return numerify(options.data, item.zhibiao[index].labelFormat)
-              }
-            }
-          } else if (ops.type === 'pie') {
-            op.label = {
-              show: item.zhibiao[index].chartLabel,
-              formatter (options) {
-                console.log(options)
-                return numerify(options.data, item.zhibiao[index].labelFormat)
-              }
-            }
-          }
-          op.lineStyle = {
-            width: item.zhibiao[index].chartWidth
-          }
-          if (item.zhibiao[index].chartSymbol !== '') {
-            op.symbol = item.zhibiao[index].chartSymbol
-          }
-          op.symbolSize = item.zhibiao[index].symbolSize
-          op.smooth = item.zhibiao[index].smooth
-          op.order = item.zhibiao[index].order
-          if (item.zhibiao[index].area) {
-            op.areaStyle = {
-              opacity: 0.1
-            }
+      if (data.name === 'chartLabel') { // 是否显示标签
+        const showList = item.zhibiao.filter(elss => elss.chartLabel).map(item => item.title)
+        ser.label.formatter = function (params) {
+          if (showList.indexOf(params.seriesName) >= 0) {
+            return params.data
           } else {
-            op.areaStyle = {
-              opacity: 0
-            }
+            return ''
           }
-
-          return {
-            ...op
-          }
-        })
-        console.log(resul)
-        return resul
+        }
       }
       extend = {
-        series: serFuc,
+        series: ser,
         ...other
       }
-      console.log(extend)
       this.$set(item, 'chartExtend', extend)
     },
     changeFormat (item, data) {

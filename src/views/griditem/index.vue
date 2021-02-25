@@ -59,13 +59,15 @@
                   :i="item.i"
                   :key="item.i"
                   :class="item.active ? 'click-active' : ''"
-                  @resize="resizeEvent"
+                  @resized="resizedEvent"
                   @moved="movedEvent"
                 >
                   <drag-item
                     :item="item"
                     :grid="item.grid"
                     :legend="item.legend"
+                    :currentItem="currentItem"
+                    :ref="`chart${item.i}`"
                     @deleteItem="deleteItem"
                     @onActivated="onActivated"
                     @copyItem="copyItem"
@@ -168,6 +170,32 @@
                         />
                       </div>
                     </div>
+                    <div v-if="currentItem.components !== 'pie'">
+                      <div class="item">
+                      <div class="tit">横轴标题</div>
+                      <div class="setting">
+                        <a-input
+                          label="横轴标题"
+                          width="100%"
+                          v-model="currentItem.chartSettings.xAxisName[0]"
+                          @change="changeBasic('chartSettings')"
+                          placeholder="请输入横轴标题"
+                        />
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="tit">纵轴标题</div>
+                      <div class="setting">
+                        <a-input
+                          label="纵轴标题"
+                          width="100%"
+                          v-model="currentItem.chartSettings.yAxisName[0]"
+                          @change="changeBasic('chartSettings')"
+                          placeholder="请输入纵轴标题"
+                        />
+                      </div>
+                    </div>
+                    </div>
                   </div>
                 </a-collapse-panel>
                 <a-collapse-panel
@@ -190,7 +218,7 @@
                             v-for="leg in legends1"
                             :key="leg.index"
                             :class="currentItem.legend1 === leg.name ? 'active' : ''"
-                            @click="changeLegend('1', leg.name)"
+                            @click="changeExtend('1', leg.name)"
                           >
                             <a-icon :type="leg.icon" />
                           </div>
@@ -206,7 +234,7 @@
                             v-for="leg in legends2"
                             :key="leg.index"
                             :class="currentItem.legend2 === leg.name ? 'active' : ''"
-                            @click="changeLegend('2', leg.name)"
+                            @click="changeExtend('2', leg.name)"
                           >
                             <a-icon :type="leg.icon" />
                           </div>
@@ -215,7 +243,7 @@
                             v-for="leg in legends2"
                             :key="leg.index"
                             :class="currentItem.legend2 === leg.name ? 'active' : ''"
-                            @click="changeLegend('2', leg.name)"
+                            @click="changeExtend('2', leg.name)"
                           >
                             <a-icon :type="leg.icon" style="transform:rotate(90deg)"/>
                           </div>
@@ -224,7 +252,7 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="3" header="坐标系网络" v-if="currentItem.components !== 'MePie' && currentItem.components !== 'MeTable'">
+                <a-collapse-panel key="3" header="坐标系网络" v-if="currentItem.components !== 'pie' && currentItem.components !== 'MeTable'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item" v-for="ele in chartPosition" :key="ele.index">
                       <div class="tit">{{ele.name}}</div>
@@ -239,7 +267,7 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="4" header="直径" v-if="currentItem.components === 'MePie'">
+                <a-collapse-panel key="4" header="直径" v-if="currentItem.components === 'pie'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
                       <div class="tit">直径</div>
@@ -253,7 +281,7 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="5" header="位置" v-if="currentItem.components === 'MePie'">
+                <a-collapse-panel key="5" header="位置" v-if="currentItem.components === 'pie'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
                       <div class="tit">距顶部</div>
@@ -309,6 +337,7 @@ export default {
   data () {
     return {
       currentTab: '1',
+      currentChooseItem: {},
       pageSizeArr: [
         { label: '10', value: 10 },
         { label: '20', value: 20 },
@@ -323,26 +352,30 @@ export default {
       menuList: [ // 可选图表类型
         {
           name: 'bar-chart',
-          comment: 'MeHistogram',
+          comment: 'histogram',
           type: 'v-charts',
+          chart: 'histogram',
           cName: '条形图'
         },
         {
           name: 'fund',
-          comment: 'MeBar',
+          comment: 'bar',
           type: 'v-charts',
+          chart: 'bar',
           cName: '柱状图'
         },
         {
           name: 'line-chart',
-          comment: 'MeLine',
+          comment: 'line',
           type: 'v-charts',
+          chart: 'histogram',
           cName: '折线图'
         },
         {
           name: 'pie-chart',
-          comment: 'MePie',
+          comment: 'pie',
           type: 'v-charts',
+          chart: 'pie',
           cName: '饼图'
         },
         {
@@ -352,6 +385,11 @@ export default {
           cName: '表格'
         }
       ]
+    }
+  },
+  watch: {
+    currentItem (newVal) {
+      this.currentChooseItem = newVal
     }
   },
   methods: {
@@ -563,6 +601,12 @@ export default {
 .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
   height: 30px;
   line-height: 30px;
+}
+.ant-select-selection {
+  font-size: 12px;
+}
+.ant-input {
+  font-size: 12px;
 }
 .ant-tabs-tabpane {
   padding: 0 10px;

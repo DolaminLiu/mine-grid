@@ -8,7 +8,17 @@
         style="flex: 1; position: relative; overflow: hidden"
         v-if="item.type !== 'table'"
       >
-        <component
+        <ve-chart
+        :ref="`chart${item.i}`"
+        width="100%"
+        height="100%"
+        :colors="colors"
+        :judge-width="true"
+        :grid="item.grid"
+        :settings="item.chartSettings"
+        :extend="item.chartExtend"
+        :data="item.chartData"></ve-chart>
+        <!-- <component
           :is="item.components"
           :dataSource="item"
           :chartSettings="item.chartSettings"
@@ -23,7 +33,7 @@
             height: '100%',
             overflow: 'hidden',
           }"
-        ></component>
+        ></component> -->
         <div class="info">模拟效果</div>
       </div>
       <div style="flex: 1; position: relative; overflow: hidden;justify-content: center;display: flex;" v-else>
@@ -79,7 +89,7 @@ import {
   MeBar
 } from '@/components/VChart'
 export default {
-  props: ['item'],
+  props: ['item', 'currentItem'],
   components: {
     MeLine,
     MeHistogram,
@@ -87,12 +97,30 @@ export default {
     MeTable,
     MeBar
   },
+  data () {
+    return {
+      colors: [
+        '#5AB1EF',
+        '#FA6E86',
+        '#FFB980',
+        '#0167A6',
+        '#C4B4E4',
+        '#1BD4AE']
+    }
+  },
   watch: {
     item (newVal) {
       // console.log('ooooo')
     }
   },
   methods: {
+    resizedEvent () { // 改变宽高
+      const id = this.currentItem.i
+      console.log(this.$refs[`chart${id}`].echarts)
+      setTimeout(() => {
+        this.$refs[`chart${id}`].echarts.resize()
+      }, 200)
+    },
     deleteItem (item) {
       this.$emit('deleteItem', item)
     },
