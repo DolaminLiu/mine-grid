@@ -102,7 +102,7 @@
             <a-tab-pane key="1" tab="数据">
               <data-module @changeTheme="changeTheme" @changeFilter="changeFilter" :currentItem="currentItem" @modifyItemCol="modifyItemCol" ref="DataModule" />
             </a-tab-pane>
-            <a-tab-pane key="2" tab="样式">
+            <a-tab-pane key="2" tab="选项">
               <a-collapse
                 active-key="1"
                 v-if="currentType === 'table'"
@@ -145,7 +145,7 @@
                 </a-collapse-panel>
               </a-collapse>
               <a-collapse
-                v-else
+                v-if="currentType === 'v-charts'"
                 :activeKey="styleCollapse"
                 :bordered="false"
                 :destroyInactivePanel="destroyInactivePanel"
@@ -156,6 +156,25 @@
                     :rotate="props.isActive ? 90 : 0"
                   />
                 </template>
+                <a-collapse-panel key="0" header="图表类型" v-if="currentItem.chart === 'pie' || currentItem.chart === 'funnel'">
+                  <div class="my-drag-layout__panel__cont">
+                    <div class="item">
+                      <div class="setting">
+                        <div class="setting-wrap">
+                          <div
+                            v-for="pie in pieType"
+                            :key="pie.index"
+                            style="margin-right: 8px;"
+                            :class="currentItem.chartPie === pie.name ? 'active' : 'pie-type'"
+                            @click="changeType(pie.name)"
+                          >
+                            <a-icon :type="pie.icon" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a-collapse-panel>
                 <a-collapse-panel key="1" header="基础">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
@@ -170,15 +189,15 @@
                         />
                       </div>
                     </div>
-                    <div v-if="currentItem.components !== 'pie'">
+                    <div v-if="currentItem.chart === 'histogram' || currentItem.chart === 'line'">
                       <div class="item">
                       <div class="tit">横轴标题</div>
                       <div class="setting">
                         <a-input
                           label="横轴标题"
                           width="100%"
-                          v-model="currentItem.chartSettings.xAxisName[0]"
-                          @change="changeBasic('chartSettings')"
+                          v-model="currentItem.chartExtend.xAxis.name"
+                          @change="changeChartExtend(currentItem, 'xAxis')"
                           placeholder="请输入横轴标题"
                         />
                       </div>
@@ -189,8 +208,34 @@
                         <a-input
                           label="纵轴标题"
                           width="100%"
-                          v-model="currentItem.chartSettings.yAxisName[0]"
-                          @change="changeBasic('chartSettings')"
+                          v-model="currentItem.chartExtend[`yAxis.0`].name"
+                          @change="changeChartExtend(currentItem, 'yAxis')"
+                          placeholder="请输入纵轴标题"
+                        />
+                      </div>
+                    </div>
+                    </div>
+                    <div v-if="currentItem.chart === 'bar'">
+                      <div class="item">
+                      <div class="tit">横轴标题</div>
+                      <div class="setting">
+                        <a-input
+                          label="横轴标题"
+                          width="100%"
+                          v-model="currentItem.chartExtend[`xAxis.0`].name"
+                          @change="changeChartExtend(currentItem, 'xAxis')"
+                          placeholder="请输入横轴标题"
+                        />
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="tit">纵轴标题</div>
+                      <div class="setting">
+                        <a-input
+                          label="纵轴标题"
+                          width="100%"
+                          v-model="currentItem.chartExtend.yAxis.name"
+                          @change="changeChartExtend(currentItem, 'yAxis')"
                           placeholder="请输入纵轴标题"
                         />
                       </div>
@@ -202,7 +247,7 @@
                   key="2"
                   header="图例"
                   :disabled="disabledLegend"
-                  v-if="currentItem.components !== 'MeTable'"
+                  v-if="currentItem.chart !== 'table'"
                 >
                   <a-switch
                     slot="extra"
@@ -252,8 +297,21 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="3" header="坐标系网络" v-if="currentItem.components !== 'pie' && currentItem.components !== 'MeTable'">
-                  <div class="my-drag-layout__panel__cont">
+                <a-collapse-panel key="3" header="坐标系网络" v-if="currentItem.chart !== 'pie' && currentItem.chart !== 'table'">
+                  <div class="my-drag-layout__panel__cont" v-if="currentItem.chart === 'funnel'">
+                    <div class="item" v-for="ele in chartPosition" :key="ele.index">
+                      <div class="tit">{{ele.name}}</div>
+                      <div class="setting">
+                        <a-input
+                          type="number"
+                          style="width: 100px"
+                          v-model="currentItem.chartExtend.series[`${ele.eName}`]"
+                          @change="changeBasic('grid')"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-drag-layout__panel__cont" v-else>
                     <div class="item" v-for="ele in chartPosition" :key="ele.index">
                       <div class="tit">{{ele.name}}</div>
                       <div class="setting">
@@ -267,40 +325,50 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="4" header="直径" v-if="currentItem.components === 'pie'">
+                <a-collapse-panel key="4" header="直径" v-if="currentItem.chart === 'pie'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
-                      <div class="tit">直径</div>
+                      <div class="tit">内直径</div>
                       <div class="setting">
                         <a-input
-                          width="100%"
-                          v-model="currentItem.chartSettings.radius"
-                          @change="changeBasic('chartSettings')"
-                        />
+                          style="width:80%"
+                          v-model="currentItem.radiusInner"
+                          @change="changeBasic('radius')"
+                        />%
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="tit">外直径</div>
+                      <div class="setting">
+                        <a-input
+                          style="width:80%"
+                          v-model="currentItem.radiusOut"
+                          @change="changeBasic('radius')"
+                        />%
                       </div>
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="5" header="位置" v-if="currentItem.components === 'pie'">
+                <a-collapse-panel key="5" header="位置" v-if="currentItem.chart === 'pie'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
                       <div class="tit">距顶部</div>
                       <div class="setting">
                         <a-input
-                          v-model="chartSeriesCenterTop"
+                          v-model="currentItem.chartSeriesCenterLeft"
                           @change="changeBasic('pieCenter', 1)"
-                          width="100%"
-                        />
+                          style="width:80%"
+                        />%
                       </div>
                     </div>
                     <div class="item">
                       <div class="tit">距左边</div>
                       <div class="setting">
                         <a-input
-                          v-model="chartSeriesCenterLeft"
+                          v-model="currentItem.chartSeriesCenterTop"
                           @change="changeBasic('pieCenter', 0)"
-                          width="100%"
-                        />
+                          style="width:80%"
+                        />%
                       </div>
                     </div>
                   </div>
@@ -382,14 +450,24 @@ export default {
           name: 'table',
           comment: 'MeTable',
           type: 'table',
+          chart: 'table',
           cName: '表格'
         }
+      ],
+      pieType: [
+        { name: '', icon: 'pie-chart' },
+        { name: 'radius', icon: 'pie-chart' },
+        { name: 'funnel', icon: 'funnel-plot' }
       ]
     }
   },
   watch: {
     currentItem (newVal) {
       this.currentChooseItem = newVal
+      console.log(this.currentType)
+    },
+    currentType (newVal) {
+      console.log(newVal)
     }
   },
   methods: {
@@ -458,6 +536,9 @@ export default {
         .setting-wrap {
           display: flex;
           border-left: 1px solid #d9d9d9;
+          .pie-type {
+            border-left: 1px solid #d9d9d9;
+          }
           div {
             width: 30px;
             height: 30px;

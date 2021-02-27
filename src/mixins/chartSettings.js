@@ -3,9 +3,7 @@ export default {
     return {
       currentItem: {},
       destroyInactivePanel: false,
-      styleCollapse: ['1', '2', '3', '4', '5'], // 打开的样式折叠面板
-      chartSeriesCenterLeft: '',
-      chartSeriesCenterTop: '',
+      styleCollapse: ['0', '1', '2', '3', '4', '5'], // 打开的样式折叠面板
 
       chartPosition: [
         { name: '左边距', eName: 'left' },
@@ -45,136 +43,120 @@ export default {
         }
       })
     },
+    changeType (type) {
+      console.log(type)
+      this.currentItem.chartPie = type
+      let pietype = ''
+      if (type === 'funnel') {
+        this.currentItem.chartSettings.type = type
+        pietype = 'funnel'
+      } else {
+        this.currentItem.chartSettings.type = 'pie'
+        pietype = 'pie'
+        this.currentItem.chartSettings.roseType = type
+      }
+
+      this.layoutData.map(item => {
+        if (item.i === this.currentItem.i) {
+          this.$set(item, 'chartPie', type)
+          this.$set(item, 'chart', pietype)
+          this.$set(item, 'chartSettings', this.currentItem.chartSettings)
+        }
+      })
+    },
     changeExtend (type, name) { // 切换图例
       this.layoutData.map(item => {
         if (item.i === this.currentItem.i) {
-          const { series } = this.currentItem.chartExtend
+          let td = {}
           if (type === '1') { // 方位切换自动将水平方向居中
             this.currentItem.legend1 = name
             this.currentItem.legend2 = 'center'
-            let td = {}
             if (name === 'top' || name === 'bottom') {
               td = {
-                legend: {
-                  [`${name}`]: 0,
-                  left: 'center',
-                  orient: 'horizontal'
-                },
-                series
+                [`${name}`]: 0,
+                left: 'center',
+                orient: 'horizontal'
               }
             } else {
               td = {
-                legend: {
-                  [`${name}`]: 0,
-                  top: 'center',
-                  orient: 'vertical'
-                },
-                series
+                [`${name}`]: 0,
+                top: 'center',
+                orient: 'vertical'
               }
             }
-            this.$set(item, 'chartExtend', td)
           } else { // 水平位置切换
             this.currentItem.legend2 = name
             const base = this.currentItem.legend1
-            let td = {}
             if (base === 'top' || base === 'bottom') { // 方位在上下对水平方向的判断
               if (name === 'center') {
                 td = {
-                  legend: {
-                    [`${base}`]: 0,
-                    left: 'center',
-                    orient: 'horizontal'
-                  },
-                  series
+                  [`${base}`]: 0,
+                  left: 'center',
+                  orient: 'horizontal'
                 }
               } else {
                 td = {
-                  legend: {
-                    [`${name}`]: 0,
-                    [`${base}`]: 0,
-                    orient: 'horizontal'
-                  },
-                  series
+                  [`${name}`]: 0,
+                  [`${base}`]: 0,
+                  orient: 'horizontal'
                 }
               }
             } else { // 方位在左右对水平方向的判断
               if (name === 'left') {
                 td = {
-                  legend: {
-                    [`${base}`]: 0,
-                    top: 0,
-                    orient: 'horizontal'
-                  },
-                  series
+                  [`${base}`]: 0,
+                  top: 0,
+                  orient: 'horizontal'
                 }
               } else if (name === 'center') {
                 td = {
-                  legend: {
-                    [`${base}`]: 0,
-                    top: 'center',
-                    orient: 'vertical'
-                  },
-                  series
+                  [`${base}`]: 0,
+                  top: 'center',
+                  orient: 'vertical'
                 }
               } else {
                 td = {
-                  legend: {
-                    [`${base}`]: 0,
-                    bottom: 0,
-                    orient: 'horizontal'
-                  },
-                  series
+                  [`${base}`]: 0,
+                  bottom: 0,
+                  orient: 'horizontal'
                 }
               }
             }
-            this.$set(item, 'chartExtend', td)
           }
+          this.currentItem.chartExtend.legend = td
         }
       })
+      console.log(this.layoutData)
     },
     changeTableCheck (type) {
     },
     changeBasic (setName, type) { // v-chart样式的配置
-      if (setName === 'pieCenter') {
-        this.layoutData.map(item => {
-          const { legend, series } = item.chartExtend
-          if (item.i === this.currentItem.i) {
-            let ser = {}
-            if (type === 0) { // 左边偏移
-              const left = [`${this.chartSeriesCenterLeft}%`]
-              const top = [`${series.center[1]}`]
-              const mid = [...left, ...top]
-              ser = {
-                series: {
-                  center: mid
-                },
-                legend
-              }
-            } else { // 顶部偏移
-              const left = [`${series.center[0]}`]
-              const top = [`${this.chartSeriesCenterTop}%`]
-              const mid = [...left, ...top]
-              ser = {
-                series: {
-                  center: mid
-                },
-                legend
-              }
-            }
+      this.layoutData.map(item => {
+        if (item.i === this.currentItem.i) {
+          const elem = { ...this.currentItem }
+          const sets = elem[`${setName}`]
+          this.$set(item, `${setName}`, sets)
 
-            this.$set(item, 'chartExtend', ser)
+          const set = { ...item.chartExtend }
+
+          if (setName === 'pieCenter') {
+            console.log('9999999999999')
+            const top = item.chartSeriesCenterTop === '' ? ['0'] : [`${item.chartSeriesCenterTop}%`]
+            const left = item.chartSeriesCenterLeft === '' ? ['0'] : [`${item.chartSeriesCenterLeft}%`]
+            let center = [...top, ...left]
+            console.log(center)
+            item.chartExtend.series.center = center
+            set.series.center = center
+          } else if (setName === 'radius') {
+            let radius = [...Array(item.radiusInner), ...Array(item.radiusOut)]
+            item.chartExtend.series.radius = radius
+            set.series.radius = radius
           }
-        })
-      } else {
-        this.layoutData.map(item => {
-          if (item.i === this.currentItem.i) {
-            const elem = { ...this.currentItem }
-            const sets = elem[`${setName}`]
-            this.$set(item, `${setName}`, sets)
-          }
-        })
-        console.log(this.layoutData)
-      }
+
+          this.$set(item, 'chartExtend', set)
+          this.$refs[`chart${item.i}`][0].resizedEvent()
+        }
+      })
     }
   }
 }

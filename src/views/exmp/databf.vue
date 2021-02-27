@@ -314,7 +314,7 @@
                         class="bi-tree"
                         :options="{
                           forceFallback: true,
-                          group: { name: currentItem.type === 'table' ? 'weiduAll' : 'zhibiaoAll', pull: 'clone', put: false },
+                          group: { name: currentItem.chart === 'table' ? 'weiduAll' : 'zhibiaoAll', pull: 'clone', put: false },
                           sort: false,
                         }"
                         @start="start2"
@@ -540,7 +540,7 @@ export default {
       // console.log(e.draggedContext.element.id)
       this.moveEle = e.draggedContext.element
       this.moveId = e.draggedContext.element.id
-      if (this.currentItem.type === 'table' && this.filterArr4.length !== 0) {
+      if (this.currentItem.chart === 'table' && this.filterArr4.length !== 0) {
         res = this.filterArr4.find(item => item.id === this.moveId)
       } else if (this.filterArr3.length !== 0) {
         res = this.filterArr3.find(item => item.id === this.moveId)

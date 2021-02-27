@@ -31,13 +31,107 @@ export default {
       let itemH = 3
       let addEle = {}
       if (item.type !== 'table') {
-        const ser1 = {
-          label: {},
-          smooth: false,
-          center: ['50%', '50%']
+        const extend1 = { // 折线图柱图
+          legend: {
+            show: true,
+            bottom: 0,
+            left: 'center',
+            orient: 'horizontal'
+          },
+          xAxis: {
+            name: '',
+            nameLocation: 'end',
+            nameTextStyle: {
+              color: '#d9d9d9'
+            }
+          },
+          'yAxis.0': {
+            name: '',
+            nameLocation: 'end',
+            nameTextStyle: {
+              color: '#d9d9d9'
+            }
+          },
+          series: {
+            label: {
+              show: false
+            }
+          }
         }
-        // const ser2 = []
-        // const serise = item.chart === 'pie' ? ser1 : ser2
+        const extend2 = { // 横图
+          legend: {
+            show: true,
+            bottom: 0,
+            left: 'center',
+            orient: 'horizontal'
+          },
+          'xAxis.0': {
+            name: '',
+            nameLocation: 'end',
+            nameTextStyle: {
+              color: '#d9d9d9'
+            }
+          },
+          yAxis: {
+            name: '',
+            nameLocation: 'end',
+            nameTextStyle: {
+              color: '#d9d9d9'
+            }
+          },
+          series: {
+            label: {
+              show: false
+            }
+          }
+        }
+        const extend3 = { // 饼图
+          legend: {
+            show: true,
+            bottom: 0,
+            left: 'center',
+            orient: 'horizontal'
+          },
+          series: {
+            label: {
+              show: true,
+              formatter: '{a}\n{b}: {c}'
+            },
+            smooth: false,
+            center: ['50%', '50%'],
+            radius: ['0', '80']
+          }
+        }
+        const extend4 = { // 漏斗图
+          legend: {
+            show: true,
+            bottom: 0,
+            left: 'center',
+            orient: 'horizontal'
+          },
+          series: {
+            label: {
+              show: true,
+              formatter: '{a}\n{b}: {c}'
+            },
+            top: '20',
+            right: '20',
+            bottom: '20',
+            left: '20'
+          }
+        }
+        let extend = {}
+
+        if (item.chart === 'pie') {
+          extend = extend3
+        } else if (item.chart === 'bar') {
+          extend = extend2
+        } else if (item.chart === 'funnel') {
+          extend = extend4
+        } else {
+          extend = extend1
+        }
+
         const showL = item.cName === '折线图' ? ['指标'] : []
         addEle = {
           'i': this.nowIndex,
@@ -47,43 +141,27 @@ export default {
           components: item.comment,
           cName: item.cName,
           chart: item.chart,
+          dataEmpty: true,
           weidu: [],
           zhibiao: [],
           guolv: [],
-          chartExtend: {
-            legend: {
-              show: true,
-              bottom: 0,
-              left: 'center',
-              orient: 'horizontal'
-            },
-            xAxis: {
-              nameLocation: 'end',
-              nameTextStyle: {
-                color: '#d9d9d9'
-              }
-            },
-            yAxis: {
-              nameLocation: 'end',
-              nameTextStyle: {
-                color: '#d9d9d9'
-              }
-            },
-            series: ser1
-          }, // 图例配置
+          chartExtend: extend, // 图例配置
           chartSettings: {
             type: item.chart,
             showLine: showL,
-            radius: 80,
             dimension: ['日期'],
             metrics: ['指标'],
             xAxisName: [''],
             yAxisName: [''],
-            labelMap: {}
+            labelMap: {},
+            roseType: '',
+            useDefaultOrder: true,
+            limitShowNum: item.chart === 'pie' ? 10 : 500
           },
           chartData: {
             rows: dataBaseDefault
           },
+          chartType: item.type,
           grid: {
             top: 40,
             left: 40,
@@ -92,8 +170,13 @@ export default {
           }, // 图位置配置
           legend1: 'bottom',
           legend2: 'center',
-          size: 500,
-          title: ''
+          size: item.chart === 'pie' ? 10 : 500,
+          title: '',
+          chartPie: '',
+          radiusInner: '0',
+          radiusOut: '80',
+          chartSeriesCenterLeft: '50',
+          chartSeriesCenterTop: '50'
         }
       } else {
         addEle = {
@@ -109,7 +192,8 @@ export default {
           pageSize: 10,
           source: dataBaseDefault,
           title: '',
-          type: item.type,
+          chart: item.chart,
+          chartType: item.type,
           rows: [] // 数据
         }
       }
@@ -193,7 +277,7 @@ export default {
             this.$set(ele, 'active', false)
           }
         })
-        this.currentType = item.type
+        this.currentType = item.chartType
       })
     },
     copyItem (item) { // 复制
@@ -303,7 +387,7 @@ export default {
         if (this.currentItem.i === lay.i) {
           const currentZ = { ...lay }
           let res = []
-          if (currentZ[`${type}`].length === 0 || type === 'columns') { // 数据拖拽类数组皆为空或者类为列
+          if (currentZ[`${type}`].length === 0 && type !== 'columns') { // 数据拖拽类数组皆为空或者类为列
             res = data.map(ele => {
               var change = {}
               if (ele.children) {
@@ -344,19 +428,62 @@ export default {
             })
           }
 
-          if (res.length !== 0) {
-            this.$set(lay, type, res)
-          }
-          console.log(res)
-          if (type === 'weidu' && lay.weidu.length !== 0 && data.length !== 0) { // 替换维度
+          this.$set(lay, type, res)
+
+          if (type === 'weidu') { // 替换维度
             const { dimension, ...oter } = lay.chartSettings
-            const resW = Array(data[0].dataIndex)
-            const obj = {
-              dimension: resW,
-              ...oter
+            let obj = {}
+            if (lay.weidu.length === 0) {
+              if (data.length === 0) {
+                obj = {
+                  dimension: ['日期'],
+                  metrics: ['指标'],
+                  ...oter
+                }
+              } else {
+                const resW = Array(data[0].dataIndex)
+                obj = {
+                  dimension: resW,
+                  metrics: ['指标'],
+                  ...oter
+                }
+              }
+            } else {
+              if (data.length === 0) {
+                if (lay.chart === 'pie') {
+                  obj = {
+                    dimension: ['维度'],
+                    ...oter
+                  }
+                } else {
+                  obj = {
+                    dimension: ['日期'],
+                    ...oter
+                  }
+                }
+              } else {
+                const resW = Array(data[0].dataIndex)
+                obj = {
+                  dimension: resW,
+                  ...oter
+                }
+              }
             }
             this.$set(lay, 'chartSettings', obj)
           } else if (type === 'zhibiao') { // 替换指标
+            if (lay.chart === 'pie' || lay.chart === 'funnel') {
+              const extend = { ...lay.chartExtend }
+              extend.series.name = data.length === 0 ? '维度' : data[0].title
+              extend.tooltip = {
+                show: true,
+                formatter: '{a}<br />{b}: {c}'
+                // formatter: (param) => {
+                //   const ser = lay.zhibiao.length === 0 ? '维度' : lay.zhibiao[0].title
+                //   return `${ser}<br />${param.name}: ${param.value}`
+                // }
+              }
+              this.$set(lay, 'chartExtend', extend)
+            }
             const { metrics, showLine, ...oter } = lay.chartSettings
 
             var resW = []
@@ -385,7 +512,7 @@ export default {
     modifyItemCol (data) { // 编辑列属性
       this.layoutData.map(item => {
         if (this.currentItem.i === item.i) {
-          if (data.name === 'size') {
+          if (data.name === 'size') { // 显示条数
             const setting = { ...item.chartSettings }
             setting.limitShowNum = data.res
             this.$set(item, 'size', data.res)
@@ -443,18 +570,19 @@ export default {
                 }
               }
             })
+            // 先把对应维度指标过滤改了方便数据回写
             this.$set(item, data.type, res)
+            // 开始正式更改图表样式配置
             if (data.type === 'zhibiao') {
-              if (data.rights === 'extend') {
+              if (data.rights === 'extend') { // extand统一修改方法
                 this.changeChartExtend(item, data)
-              } else if (data.rights === 'settings') {
+              } else if (data.rights === 'settings') { // chartsetting统一修改方法
                 this.changeChartSettings(item, data)
               }
             }
           }
         }
       })
-      console.log(this.layoutData)
     },
     changeChartSettings (item, data) {
       const result = { ...item.chartSettings }
@@ -469,11 +597,13 @@ export default {
           Object.assign(objs, obj)
         })
         result.labelMap = objs
+        const extend = { ...item.chartExtend }
+        extend.series.name = item.zhibiao[0].title
+        this.$set(item, 'chartExtend', extend)
       } else if (data.name === 'type') {
         const ar = []
         item.zhibiao.map(ele => {
           if (ele.type === 'line') {
-            console.log('line')
             ar.push(ele.dataIndex)
           }
         })
@@ -482,73 +612,67 @@ export default {
       this.$set(item, 'chartSettings', result)
     },
     changeChartExtend (item, data) {
-      // const ser = { ...item.chartExtend.series }
-      const { series, ...other } = item.chartExtend
-      let extend = {}
+      if (data.attrName && data.attrName === 'series') {
+        const { series, ...other } = item.chartExtend
+        let extend = {}
+        if (item.chart === 'pie' || item.chart === 'funnel') {
+          extend = { ...item.chartExtend }
+          extend.series.label.show = data.res.chartLabel
+        } else {
+          const serFuc = function (options) {
+            const resul = options.map((ops, index) => {
+              const op = { ...ops }
+              if (ops.type === 'bar') {
+                op.label = {
+                  show: item.zhibiao[index].chartLabel,
+                  position: item.zhibiao[index].labelPosition,
+                  formatter (options) {
+                    return numerify(options.data, item.zhibiao[index].labelFormat)
+                  }
+                }
+              } else if (ops.type === 'line') {
+                op.label = {
+                  show: item.zhibiao[index].chartLabel,
+                  position: item.zhibiao[index].labelPosition,
+                  offset: [0, -15],
+                  formatter (options) {
+                    return numerify(options.data, item.zhibiao[index].labelFormat)
+                  }
+                }
+              }
+              op.lineStyle = {
+                width: item.zhibiao[index].chartWidth
+              }
+              if (item.zhibiao[index].chartSymbol !== '') {
+                op.symbol = item.zhibiao[index].chartSymbol
+              }
+              op.symbolSize = item.zhibiao[index].symbolSize
+              op.smooth = item.zhibiao[index].smooth
+              op.order = item.zhibiao[index].order
+              op.name = item.zhibiao[index].title
+              if (item.zhibiao[index].area) {
+                op.areaStyle = {
+                  opacity: 0.1
+                }
+              } else {
+                op.areaStyle = {
+                  opacity: 0
+                }
+              }
 
-      const serFuc = function (options) {
-        const resul = options.map((ops, index) => {
-          const op = { ...ops }
-          if (ops.type === 'bar') {
-            op.label = {
-              show: item.zhibiao[index].chartLabel,
-              position: item.zhibiao[index].labelPosition,
-              formatter (options) {
-                console.log(options)
-                return numerify(options.data, item.zhibiao[index].labelFormat)
+              return {
+                ...op
               }
-            }
-          } else if (ops.type === 'line') {
-            op.label = {
-              show: item.zhibiao[index].chartLabel,
-              position: item.zhibiao[index].labelPosition,
-              offset: [0, -15],
-              formatter (options) {
-                console.log(options)
-                return numerify(options.data, item.zhibiao[index].labelFormat)
-              }
-            }
-          } else if (ops.type === 'pie') {
-            op.label = {
-              show: item.zhibiao[index].chartLabel,
-              formatter (options) {
-                console.log(options)
-                return numerify(options.data, item.zhibiao[index].labelFormat)
-              }
-            }
+            })
+            return resul
           }
-          op.lineStyle = {
-            width: item.zhibiao[index].chartWidth
+          extend = {
+            series: serFuc,
+            ...other
           }
-          if (item.zhibiao[index].chartSymbol !== '') {
-            op.symbol = item.zhibiao[index].chartSymbol
-          }
-          op.symbolSize = item.zhibiao[index].symbolSize
-          op.smooth = item.zhibiao[index].smooth
-          op.order = item.zhibiao[index].order
-          if (item.zhibiao[index].area) {
-            op.areaStyle = {
-              opacity: 0.1
-            }
-          } else {
-            op.areaStyle = {
-              opacity: 0
-            }
-          }
-
-          return {
-            ...op
-          }
-        })
-        console.log(resul)
-        return resul
+        }
+        this.$set(item, 'chartExtend', extend)
       }
-      extend = {
-        series: serFuc,
-        ...other
-      }
-      console.log(extend)
-      this.$set(item, 'chartExtend', extend)
     },
     changeFormat (item, data) {
       var result = []

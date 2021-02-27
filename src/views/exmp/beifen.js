@@ -162,7 +162,6 @@ export default {
       if (this.$refs.DataModule) {
         this.$refs.DataModule.hide()
       }
-      debugger
       console.log(item.comment)
       if (item.comment === 'pie') {
         console.log(addItem.chartExtend.series)

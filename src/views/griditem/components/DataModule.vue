@@ -1,7 +1,7 @@
 <template>
   <div class="data-module-layout">
     <div class="module-left">
-      <div class="module-left__con" v-if="currentItem.type === 'table'">
+      <div class="module-left__con" v-if="currentItem.chart === 'table'">
         <div class="grid-box module-left__hd">
           <a-icon type="cluster" />表格列
         </div>
@@ -47,7 +47,7 @@
                   <a-icon
                     type="delete"
                     class="delete"
-                    @click="deleteItem(4, item)"
+                    @click="deleteItem.stop(4, item)"
                   />
                 </div>
               </li>
@@ -95,7 +95,7 @@
                   <a-icon
                     type="delete"
                     class="delete"
-                    @click="deleteItem(1, item)"
+                    @click.stop="deleteItem(1, item)"
                   />
                 </div>
               </li>
@@ -106,7 +106,7 @@
           </div>
         </div>
 
-        <div class="grid-box module-left__hd">
+        <div class="grid-box module-left__hd" style="margin-top: 15px">
           <a-icon type="cluster" />指标
         </div>
         <div class="grid-box">
@@ -114,9 +114,9 @@
             v-model="filterArr2"
             tag="ul"
             class="bi-select-tree"
-            group="zhibiaoAll"
+            :group="zhibiaoAllLimit"
             animation="300"
-            :class="[{ droppable: startMove2 ? true : false }]"
+            :class="[{ droppable: startMove2 ? true : false }, { limit: (filterArr2.length > 0 && currentItem.chart === 'pie') ? true : false }]"
           >
             <transition-group>
               <li
@@ -138,13 +138,13 @@
                   <a-icon
                     type="delete"
                     class="delete"
-                    @click="deleteItem(2, item)"
+                    @click.stop="deleteItem(2, item)"
                   />
                 </div>
               </li>
             </transition-group>
           </draggable>
-          <div class="box-placeholder">拖拽右侧字段进行添加</div>
+          <div class="box-placeholder" v-if="zhibiaoAllLimit === 'zhibiaoAll' || currentItem.chart !== 'pie'">拖拽右侧字段进行添加</div>
         </div>
       </div>
       <div class="module-left__con">
@@ -181,7 +181,7 @@
                   <a-icon
                     type="delete"
                     class="delete"
-                    @click="deleteItem(3, item)"
+                    @click.stop="deleteItem(3, item)"
                   />
                 </div>
               </li>
@@ -190,11 +190,11 @@
           <div class="box-placeholder">拖拽右侧字段进行添加</div>
         </div>
       </div>
-      <div class="module-left__con" v-if="currentItem.type !== 'table'">
+      <div class="module-left__con" v-if="currentItem.chart !== 'table'">
         <div class="grid-box module-left__hd">
           <a-icon type="cluster" />数量
         </div>
-        <div style="dispaly: flex">
+        <div style="dispaly: flex;margin-left:10px">
           <span>结果展示</span>
           <a-input
             type="number"
@@ -202,6 +202,12 @@
             v-model="currentItem.size"
             @change="changeBasic('size')"
           />
+          <a-tooltip v-if="currentItem.chart === 'pie'">
+            <template slot="title">
+            剩余数量合并为其他
+            </template>
+           <a-icon type="info-circle" theme="filled" style="cursor: pointer;margin-left:5px"/>
+        </a-tooltip>
         </div>
       </div>
     </div>
@@ -386,7 +392,7 @@
                             forceFallback: true,
                             group: {
                               name:
-                                currentItem.type === 'table'
+                                currentItem.chart === 'table'
                                   ? 'weiduAll'
                                   : 'zhibiaoAll',
                               pull: 'clone',
@@ -404,7 +410,12 @@
                               :src="ele.img"
                               class="type-icon"
                               style="height: 15px; width: 15px"
-                            />{{ ele.dataIndex }}</div>
+                            />
+                            <a-tooltip>
+                               <template slot="title">
+                               {{ele.dataIndex}}
+                            </template>{{ele.dataIndex}}</a-tooltip>
+                            </div>
                         </draggable>
                       </li>
                     </div>
@@ -449,6 +460,7 @@ export default {
   data () {
     return {
       weiduAllLimit: 'weiduAll',
+      zhibiaoAllLimit: '',
       currentModifyItem: {},
       weiduArr: [],
       zhibiaoArr: [],
@@ -800,21 +812,22 @@ export default {
   },
   watch: {
     currentItem (newVal) {
+      console.log(newVal)
       this.currentModifyItem = newVal
     },
     currentModifyItem (newVal) {
       console.log(newVal)
       this.currentModifyItem = newVal
-      if (newVal.type === 'table') {
+      if (newVal.chart === 'table') {
         this.filterArr4 = newVal.columns
+        this.filterArr2 = []
       } else {
         this.filterArr1 = newVal.weidu
         this.filterArr2 = newVal.zhibiao
       }
       this.filterArr3 = newVal.guolv
     },
-    filterArr1 (newVal) {
-      // console.log('改了arr1')
+    filterArr1 (newVal) { // 维度添加项
       if (newVal.length > 0) {
         this.weiduAllLimit = ''
       } else {
@@ -827,23 +840,32 @@ export default {
       }
       this.$emit('changeFilter', obj)
     },
-    filterArr2 (newVal) {
-      // console.log('改了arr2')
+    filterArr2 (newVal) { // 指标添加项
+      if (this.currentModifyItem.chart === 'pie') {
+        if (newVal.length > 0) {
+          this.zhibiaoAllLimit = ''
+        } else {
+          this.zhibiaoAllLimit = 'zhibiaoAll'
+        }
+      } else {
+        this.zhibiaoAllLimit = 'zhibiaoAll'
+      }
       const obj = {
         type: 'zhibiao',
         data: newVal
       }
-      this.$emit('changeFilter', obj)
+      if (this.currentModifyItem.chart !== 'table') {
+        this.$emit('changeFilter', obj)
+      }
     },
-    filterArr3 (newVal) {
+    filterArr3 (newVal) { // 过滤添加项
       const obj = {
         type: 'guolv',
         data: newVal
       }
       this.$emit('changeFilter', obj)
     },
-    filterArr4 (newVal) {
-      // console.log(newVal)
+    filterArr4 (newVal) { // 列添加项
       const obj = {
         type: 'columns',
         data: newVal
@@ -903,7 +925,9 @@ export default {
     start2 (e) {
       // 指标开始拖动
       const moveEle = e.clone.innerText
-      if (this.filterArr2.length !== 0) {
+      if (this.currentModifyItem.chart === 'pie' && this.filterArr2.length === 1) {
+        this.startMove2 = false
+      } else if (this.currentModifyItem.chart !== 'table' && this.filterArr2.length !== 0) {
         const res = this.filterArr2.find((item) => item.dataIndex === moveEle)
         this.startMove2 = !res
       } else {
@@ -921,7 +945,7 @@ export default {
       // console.log(e.draggedContext.element.id)
       this.moveEle = e.draggedContext.element
       this.moveId = e.draggedContext.element.id
-      if (this.currentItem.type === 'table' && this.filterArr4.length !== 0) {
+      if (this.currentItem.chart === 'table' && this.filterArr4.length !== 0) {
         res = this.filterArr4.find((item) => item.id === this.moveId)
       } else if (this.filterArr3.length !== 0) {
         res = this.filterArr3.find((item) => item.id === this.moveId)
@@ -1044,6 +1068,7 @@ export default {
     .module-left__con {
       display: flex;
       flex-direction: column;
+      margin-bottom: 15px;
     }
     .criterion-box {
       padding-bottom: 8px;
@@ -1169,6 +1194,7 @@ export default {
           white-space: nowrap;
           overflow: hidden;
           position: relative;
+          text-overflow: ellipsis;
           cursor: pointer;
           &:hover {
             background: rgba(24, 144, 255, 0.05);

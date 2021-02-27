@@ -6,7 +6,7 @@
       </div>
       <div
         style="flex: 1; position: relative; overflow: hidden"
-        v-if="item.type !== 'table'"
+        v-if="item.chart !== 'table'"
       >
         <ve-chart
         :ref="`chart${item.i}`"
@@ -17,6 +17,7 @@
         :grid="item.grid"
         :settings="item.chartSettings"
         :extend="item.chartExtend"
+        :data-empty="item.dataEmpty"
         :data="item.chartData"></ve-chart>
         <!-- <component
           :is="item.components"

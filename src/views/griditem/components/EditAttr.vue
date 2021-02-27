@@ -141,14 +141,14 @@
             <a-checkbox v-model="editAttrItem.chartLabel" @change="changeCheckBoxLabel"/> 显示标签
           </div>
         </div>
-        <div class="item">
+        <div class="item" v-if="editAttrItem.type !== 'pie'">
           <div class="tit">标签格式</div>
           <div class="setting">
             <a-select
               style="width: 100%"
               :options="formatOptionsNumber"
               v-model="editAttrItem.labelFormat"
-              @change="modifyItemCol('labelFormat', 'extend')"
+              @change="modifyItemCol('labelFormat', 'extend', 'series')"
             />
           </div>
         </div>
@@ -158,7 +158,7 @@
             <a-select
               :options="orderOptionsChart"
               v-model="editAttrItem.order"
-              @change="modifyItemCol('order', 'extend')"
+              @change="modifyItemCol('order', 'settings')"
               style="width: 100%"
             />
           </div>
@@ -170,7 +170,7 @@
             <a-select
               :options="positionOptions"
               v-model="editAttrItem.labelPosition"
-              @change="modifyItemCol('chartLabel', 'extend')"
+              @change="modifyItemCol('chartLabel', 'extend', 'series')"
               style="width: 100%"
             />
           </div>
@@ -183,7 +183,7 @@
             <a-input
               width="100%"
               v-model="editAttrItem.chartWidth"
-              @change="modifyItemCol('width', 'settings')"
+              @change="modifyItemCol('width', 'extend', 'series')"
             />
           </div>
         </div>
@@ -205,7 +205,7 @@
             <a-select
               :options="symbolOptionsChart"
               v-model="editAttrItem.chartSymbol"
-              @change="modifyItemCol('symbol', 'extend')"
+              @change="modifyItemCol('symbol', 'extend', 'series')"
               style="width: 100%"
             />
           </div>
@@ -215,7 +215,7 @@
           <div class="setting">
             <a-input
               v-model="editAttrItem.symbolSize"
-              @change="modifyItemCol('symbol', 'extend')"
+              @change="modifyItemCol('symbolSize', 'extend', 'series')"
               style="width: 100%"
             />
           </div>
@@ -398,12 +398,13 @@ export default {
     }
   },
   methods: {
-    modifyItemCol (setName, extend) {
+    modifyItemCol (setName, attribute, attrName) {
       const obj = {
         type: this.editType,
         name: setName,
         res: this.editAttrItem,
-        rights: extend
+        rights: attribute,
+        attrName: attrName
       }
       this.$emit('modifyItemCol', obj)
     },
@@ -418,7 +419,8 @@ export default {
       const res = this.editAttrItem
       res.align = align
       const obj = {
-        type: 'align',
+        type: this.editType,
+        name: 'align',
         res: res
       }
       this.$emit('modifyItemCol', obj)
@@ -431,7 +433,8 @@ export default {
         type: this.editType,
         name: 'chartLabel',
         res: res,
-        rights: 'extend'
+        rights: 'extend',
+        attrName: 'series'
       }
       this.$emit('modifyItemCol', obj)
     },
@@ -443,7 +446,8 @@ export default {
         type: this.editType,
         name: 'area',
         res: res,
-        rights: 'extend'
+        rights: 'extend',
+        attrName: 'series'
       }
       this.$emit('modifyItemCol', obj)
     },
@@ -455,7 +459,8 @@ export default {
         type: this.editType,
         name: 'smooth',
         res: res,
-        rights: 'extend'
+        rights: 'extend',
+        attrName: 'series'
       }
       this.$emit('modifyItemCol', obj)
     }

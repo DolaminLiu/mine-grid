@@ -47,7 +47,9 @@ export default {
     }
   },
   mounted () {
+    console.log('999999')
     this.scroll = this.scrollThis
+    console.log(this.columns)
     if (this.columns.length !== 0) {
       this.dataSource = this.dataSourceProp.source
     }
@@ -84,11 +86,6 @@ export default {
         this.dataSource = []
       }
     }
-    // dataSourceProp (newVal) {
-    //   if (this.columns.length !== 0) {
-    //     this.dataSource = newVal.source
-    //   }
-    // }
   },
   methods: {
     fetch (data) {
