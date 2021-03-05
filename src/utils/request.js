@@ -57,9 +57,9 @@ const client = extend({
 })
 // request拦截器, 改变url 或 options
 client.interceptors.request.use((url, options) => {
-  const headers = `uqba74oj3yACyJU0quUL9bglEEP7hkYP`
+  const headers = ``
     ? {
-      Authorization: `Bearer uqba74oj3yACyJU0quUL9bglEEP7hkYP`
+      Authorization: `Bearer`
     }
     : {}
 
@@ -69,31 +69,30 @@ client.interceptors.request.use((url, options) => {
   }
 }, { global: false })
 
-// const key = 'updatable'
-// // 克隆响应对象做解析处理
-// client.interceptors.response.use(async (response) => {
-//   try {
-//     const data = await response.clone().json()
+const key = 'updatable'
+// 克隆响应对象做解析处理
+client.interceptors.response.use(async (response) => {
+  try {
+    const data = await response.clone().json()
 
-//     if (data && (data.error === 4003 || data.error === 4002)) {
-//       notification.error({
-//         description: '登录已过期，请重新登录',
-//         message: '提示',
-//         key
-//       })
-//       localStorage.removeItem('bi-user_name')
-//       localStorage.removeItem('bi-user_password')
-//       localStorage.removeItem('bi-X-Auth-Token')
-//       localStorage.removeItem('bi-oac_email')
-//       localStorage.removeItem('bi-oac_url')
-//       router.replace('/user/login')
-//       // router.replace('/user/login')
-//       return
-//     }
-//   } catch (error) {
+    if (data && (data.error === 4003 || data.error === 4002)) {
+      notification.error({
+        description: '登录已过期，请重新登录',
+        message: '提示',
+        key
+      })
+      localStorage.removeItem('bi-user_name')
+      localStorage.removeItem('bi-user_password')
+      localStorage.removeItem('bi-X-Auth-Token')
+      localStorage.removeItem('bi-oac_email')
+      localStorage.removeItem('bi-oac_url')
+      // router.replace('/user/login')
+      return
+    }
+  } catch (error) {
 
-//   }
-//   return response
-// })
+  }
+  return response
+})
 
 export default client
