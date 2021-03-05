@@ -1,76 +1,62 @@
-const IS_PROD = ['production'].includes(process.env.NODE_ENV)
-const webpack = require('webpack')
-const assetsCDN = {
-  externals: {
-    'vue': 'Vue',
-    'vue-router': 'VueRouter',
-    'vuex': 'Vuex',
-    'axios': 'axios'
-  },
-  css: [],
-  js: [
-    'https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
-    'https://cdn.jsdelivr.net/npm/vue-router@3.1.2/dist/vue-router.min.js',
-    'https://cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js',
-    'https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js'
-  ]
-}
-
-const vueConfig = {
-  configureWebpack: {
-    plugins: [
-      // Ignore all locale files of moment.js
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    ],
-    externals: IS_PROD ? assetsCDN.externals : {}
-  },
-
-  chainWebpack: config => {
-    if (IS_PROD) {
-      config.plugin('html').tap(args => {
-        args[0].cdn = assetsCDN
-        return args
-      })
+const { name } = require('./package')
+module.exports = {
+  // chainWebpack: config => {
+  //   config
+  //     .plugin('webpack-bundle-analyzer')
+  //     .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+  // },
+  pages: {
+    index: {
+      // page 的入口
+      entry: 'src/main.js',
+      // 模板来源
+      template: 'public/index.html',
+      // 当使用 title 选项时，
+      // template 中的 title 标签需要是 <title><%= htmlWebpackPlugin.options.title %></title>
+      title: '云BI-易仓六扇门'
     }
-
-    // config
-    //   .plugin('webpack-bundle-analyzer')
-    //   .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   },
-
   css: {
     loaderOptions: {
       less: {
         modifyVars: {
-          // less vars，customize ant design theme
+          'layout-body-background': '#f5f7f9',
+          'input-height-base': '30px',
+          'border-radius-base': '2px'
         },
-        // DO NOT REMOVE THIS LINE
         javascriptEnabled: true
       }
     }
   },
-
-  devServer: {
-    // development server port 8000
-    port: 8000,
-    // If you want to turn on the proxy, please remove the mockjs /src/main.js L12
-    proxy: {
-      '/api': {
-        target: 'http://172.16.1.200:8080',
-        ws: false,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
+  configureWebpack: {
+    performance: {
+      hints: 'warning',
+      // 入口起点的最大体积
+      maxEntrypointSize: 50000000,
+      // 生成文件的最大体积
+      maxAssetSize: 30000000,
+      // 只给出 js 文件的性能提示
+      assetFilter: function (assetFilename) {
+        return assetFilename.endsWith('.js')
       }
+    },
+    //  用户中心内嵌需要
+    output: {
+      // 把子应用打包成 umd 库格式
+      library: `${name}-[name]`,
+      libraryTarget: 'umd',
+      jsonpFunction: `webpackJsonp_${name}`
     }
   },
-
-  // disable source map in production
-  productionSourceMap: false,
-  lintOnSave: undefined,
-  // babel-loader no-ignore node_modules/*
-  transpileDependencies: []
+  devServer: {
+    hot: true,
+    disableHostCheck: true,
+    overlay: {
+      warnings: false,
+      errors: true
+    },
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
+  }
 }
-
-module.exports = vueConfig

@@ -1,8 +1,9 @@
-import dataBaseDefault from '@/utils/chartSource'
 import numerify from 'numerify'
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
+      dataDefault: [],
       layoutColNum: 100,
       // 布局位置数据
       layoutMap: [],
@@ -12,20 +13,54 @@ export default {
       currentType: '页面设计',
       currentItem: {},
       nowIndex: 0,
+      currentThemeCode: '',
+      currentThemeName: '',
       dialogVisible: true // 是否可拖拽或改变大小c
     }
   },
+  computed: {
+    ...mapGetters('sso', [
+      'dataBaseDefault'
+    ])
+  },
+  mounted () {
+    this.dataDefault = this.dataBaseDefault
+  },
+  watch: {
+    dataBaseDefault (newVal) {
+      console.log(newVal)
+      this.dataDefault = newVal
+      this.layoutData.map(item => {
+        if (item.i === this.currentItem.i) {
+          if (this.currentItem.source) {
+            this.$set(item, 'source', this.dataDefault)
+          } else {
+            const chart = {
+              rows: this.dataDefault
+            }
+            this.$set(item, 'chartData', chart)
+          }
+        }
+      })
+    }
+  },
   methods: {
-    resizedEvent (i, newH, newW, newHPx, newWPx) { // 改变宽高
-      const id = this.currentItem.i
-      this.$refs[`chart${id}`][0].resizedEvent()
+    resizedEvent (item) { // 改变宽高
+      const id = item.i
+      if (this.currentItem.chart !== 'table') {
+        setTimeout(() => {
+          this.$refs[`chart${id}`][0].resizedEvent(item.i)
+        }, 200)
+      }
+      // this.$refs[`chart${id}`][0].resizedEvent()
     },
     movedEvent (i, newX, newY) {
       console.log('MOVED i=' + i + ', X=' + newX + ', Y=' + newY)
     },
     addElement (item) { // 添加
-      this.layoutData.map((item) => {
-        this.$set(item, 'active', false)
+      this.chooseTheme()
+      this.layoutData.map((it) => {
+        this.$set(it, 'active', false)
       })
       let width = item.type === 'table' ? 100 : 50
       let itemH = 3
@@ -122,9 +157,9 @@ export default {
         }
         let extend = {}
 
-        if (item.chart === 'pie') {
+        if (item.chart === 'pie_chart') {
           extend = extend3
-        } else if (item.chart === 'bar') {
+        } else if (item.chart === 'bar_chart') {
           extend = extend2
         } else if (item.chart === 'funnel') {
           extend = extend4
@@ -147,19 +182,19 @@ export default {
           guolv: [],
           chartExtend: extend, // 图例配置
           chartSettings: {
-            type: item.chart,
+            type: item.comment,
             showLine: showL,
-            dimension: ['日期'],
+            dimension: ['维度'],
             metrics: ['指标'],
             xAxisName: [''],
             yAxisName: [''],
             labelMap: {},
             roseType: '',
             useDefaultOrder: true,
-            limitShowNum: item.chart === 'pie' ? 10 : 500
+            limitShowNum: item.chart === 'pie_chart' ? 10 : 500
           },
           chartData: {
-            rows: dataBaseDefault
+            rows: this.dataDefault
           },
           chartType: item.type,
           grid: {
@@ -170,13 +205,15 @@ export default {
           }, // 图位置配置
           legend1: 'bottom',
           legend2: 'center',
-          size: item.chart === 'pie' ? 10 : 500,
+          size: item.chart === 'pie_chart' ? 10 : 500,
           title: '',
           chartPie: '',
           radiusInner: '0',
           radiusOut: '80',
           chartSeriesCenterLeft: '50',
-          chartSeriesCenterTop: '50'
+          chartSeriesCenterTop: '50',
+          themeCode: this.currentThemeCode,
+          themeName: this.currentThemeName
         }
       } else {
         addEle = {
@@ -190,11 +227,13 @@ export default {
           columns: [], // 表头名称
           guolv: [],
           pageSize: 10,
-          source: dataBaseDefault,
+          source: this.dataDefault,
           title: '',
           chart: item.chart,
           chartType: item.type,
-          rows: [] // 数据
+          rows: [], // 数据
+          themeCode: this.currentThemeCode,
+          themeName: this.currentThemeName
         }
       }
 
@@ -251,11 +290,10 @@ export default {
       if (this.$refs.DataModule) {
         this.$refs.DataModule.hide()
       }
-      if (item.comment === 'pie') {
+      if (item.chart === 'pie_chart') {
         this.chartSeriesCenterLeft = addItem.chartExtend.series.center[0].replace(/%/, '')
         this.chartSeriesCenterTop = addItem.chartExtend.series.center[1].replace(/%/, '')
       }
-      this.chooseTheme()
     },
     deleteItem (item) { // 删除
       this.layoutData = this.layoutData.filter((ele) => {
@@ -436,7 +474,7 @@ export default {
             if (lay.weidu.length === 0) {
               if (data.length === 0) {
                 obj = {
-                  dimension: ['日期'],
+                  dimension: ['维度'],
                   metrics: ['指标'],
                   ...oter
                 }
@@ -450,17 +488,21 @@ export default {
               }
             } else {
               if (data.length === 0) {
-                if (lay.chart === 'pie') {
-                  obj = {
-                    dimension: ['维度'],
-                    ...oter
-                  }
-                } else {
-                  obj = {
-                    dimension: ['日期'],
-                    ...oter
-                  }
+                obj = {
+                  dimension: ['维度'],
+                  ...oter
                 }
+                // if (lay.chart === 'pie') {
+                //   obj = {
+                //     dimension: ['维度'],
+                //     ...oter
+                //   }
+                // } else {
+                //   obj = {
+                //     dimension: ['上架日期'],
+                //     ...oter
+                //   }
+                // }
               } else {
                 const resW = Array(data[0].dataIndex)
                 obj = {
@@ -471,7 +513,7 @@ export default {
             }
             this.$set(lay, 'chartSettings', obj)
           } else if (type === 'zhibiao') { // 替换指标
-            if (lay.chart === 'pie' || lay.chart === 'funnel') {
+            if (lay.chart === 'pie_chart' || lay.chart === 'funnel') {
               const extend = { ...lay.chartExtend }
               extend.series.name = data.length === 0 ? '维度' : data[0].title
               extend.tooltip = {
@@ -506,8 +548,10 @@ export default {
             }
             this.$set(lay, 'chartSettings', obj)
           }
+          this.currentItem = lay
         }
       })
+      console.log(this.layoutData)
     },
     modifyItemCol (data) { // 编辑列属性
       this.layoutData.map(item => {
@@ -523,23 +567,23 @@ export default {
 
               if (ele.id === _res.id) {
                 if (data.name === 'sort') { // 排序更改
-                  const { sorter, sortName, symbol, ...others } = ele
+                  const { sortType, ...others } = ele
                   return {
-                    sorter: _res.sortName !== '0',
-                    sortName: _res.sortName,
-                    symbol: _res.symbol,
+                    sortType: _res.sortType,
                     ...others
                   }
                 } else { // 其他配置更改
                   if (data.name === 'format') {
                     this.changeFormat(item, data.res)
                   }
+                  console.log(ele)
                   if (ele.chartSymbol !== undefined) {
-                    const { type, chartWidth, width, area, smooth, chartSymbol, symbolSize, order, sortName, chartLabel, labelFormat, labelPosition, title, ...others } = ele
+                    const { type, chartWidth, width, align, area, smooth, chartSymbol, symbolSize, order, sortName, chartLabel, labelFormat, labelPosition, title, ...others } = ele
                     return {
                       type: _res.type,
                       title: _res.title,
                       chartWidth: _res.chartWidth,
+                      align: _res.align,
                       order: _res.order,
                       labelPosition: _res.labelPosition,
                       labelFormat: _res.labelFormat,
@@ -553,6 +597,8 @@ export default {
                       ...others
                     }
                   } else {
+                    console.log('999999')
+                    console.log(ele)
                     const { align, format, width, symbol, title, ...others } = ele
                     return {
                       align: _res.align,
@@ -581,6 +627,7 @@ export default {
               }
             }
           }
+          this.currentItem = item
         }
       })
     },
@@ -597,9 +644,11 @@ export default {
           Object.assign(objs, obj)
         })
         result.labelMap = objs
-        const extend = { ...item.chartExtend }
-        extend.series.name = item.zhibiao[0].title
-        this.$set(item, 'chartExtend', extend)
+        if (item.chart === 'pie_chart' || item.chart === 'funnel') {
+          const extend = { ...item.chartExtend }
+          extend.series.name = item.zhibiao[0].title
+          this.$set(item, 'chartExtend', extend)
+        }
       } else if (data.name === 'type') {
         const ar = []
         item.zhibiao.map(ele => {
@@ -615,7 +664,7 @@ export default {
       if (data.attrName && data.attrName === 'series') {
         const { series, ...other } = item.chartExtend
         let extend = {}
-        if (item.chart === 'pie' || item.chart === 'funnel') {
+        if (item.chart === 'pie_chart' || item.chart === 'funnel') {
           extend = { ...item.chartExtend }
           extend.series.label.show = data.res.chartLabel
         } else {
@@ -676,14 +725,12 @@ export default {
     },
     changeFormat (item, data) {
       var result = []
-      if (data.dataIndex === '日期') {
+      if (data.dataIndex === '上架日期') {
         result = this.dealDateFormat(item, data)
       } else if (data.dataIndex === '月') {
         result = this.dealMonthFormat(item, data)
-      } else if (data.symbol === '数量') {
+      } else if (data.type === 'zb') {
         result = this.dealValueFormat(item, data)
-      } else if (data.symbol === '数值') {
-        result = this.dealNumberFormat(item, data)
       }
       this.$set(item, 'source', result)
     },
@@ -757,29 +804,9 @@ export default {
     dealValueFormat (item, data) { // 处理整型
       const res = item.source
       var result = []
-      if (data.format === '1') { // 不带千分号
-        result = res.map(ele => {
-          const midEle = { ...ele }
-          const val = ele[`${data.dataIndex}`].replace(/,/g, '')
-          midEle[`${data.dataIndex}`] = val
-          return {
-            ...midEle
-          }
-        })
-      } else if (data.format === '2') {
-        result = res.map(ele => {
-          const midEle = { ...ele }
-          const val = Number(ele[`${data.dataIndex}`])
-          if (val.length >= 2) {
-            midEle[`${data.dataIndex}`] = val
-          } else {
-            midEle[`${data.dataIndex}`] = val.toLocaleString()
-          }
-          return {
-            ...midEle
-          }
-        })
-      }
+      result = res.map(ele => {
+        return numerify(ele[`${data.dataIndex}`], data.format)
+      })
       return result
     },
     dealNumberFormat (item, data) { // 处理数值

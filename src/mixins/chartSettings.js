@@ -43,8 +43,7 @@ export default {
         }
       })
     },
-    changeType (type) {
-      console.log(type)
+    changeType (type) { // 饼图类型切换
       this.currentItem.chartPie = type
       let pietype = ''
       if (type === 'funnel') {
@@ -126,7 +125,7 @@ export default {
           this.currentItem.chartExtend.legend = td
         }
       })
-      console.log(this.layoutData)
+      // console.log(this.layoutData)
     },
     changeTableCheck (type) {
     },
@@ -140,11 +139,9 @@ export default {
           const set = { ...item.chartExtend }
 
           if (setName === 'pieCenter') {
-            console.log('9999999999999')
             const top = item.chartSeriesCenterTop === '' ? ['0'] : [`${item.chartSeriesCenterTop}%`]
             const left = item.chartSeriesCenterLeft === '' ? ['0'] : [`${item.chartSeriesCenterLeft}%`]
             let center = [...top, ...left]
-            console.log(center)
             item.chartExtend.series.center = center
             set.series.center = center
           } else if (setName === 'radius') {

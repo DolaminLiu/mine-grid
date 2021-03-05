@@ -22,7 +22,7 @@
                     'e-active':
                       currentAttr.dataIndex === item.dataIndex ? true : false,
                   },
-                  { 'zb-bk': item.type === 'zb' ? true : false },
+                  { 'zb-bk': item.themeType === 'zb' ? true : false },
                 ]"
                 v-for="item in filterArr4"
                 :key="item.id"
@@ -47,7 +47,7 @@
                   <a-icon
                     type="delete"
                     class="delete"
-                    @click="deleteItem.stop(4, item)"
+                    @click.stop="deleteItem(4, item)"
                   />
                 </div>
               </li>
@@ -116,7 +116,7 @@
             class="bi-select-tree"
             :group="zhibiaoAllLimit"
             animation="300"
-            :class="[{ droppable: startMove2 ? true : false }, { limit: (filterArr2.length > 0 && currentItem.chart === 'pie') ? true : false }]"
+            :class="[{ droppable: startMove2 ? true : false }, { limit: (filterArr2.length > 0 && currentItem.chart === 'pie_chart') ? true : false }]"
           >
             <transition-group>
               <li
@@ -126,7 +126,7 @@
                     'e-active':
                       currentAttr.dataIndex === item.dataIndex ? true : false,
                   },
-                  { 'zb-bk': item.type === 'zb' ? true : false },
+                  { 'zb-bk': item.themeType === 'zb' ? true : false },
                 ]"
                 v-for="item in filterArr2"
                 :key="item.id"
@@ -144,7 +144,7 @@
               </li>
             </transition-group>
           </draggable>
-          <div class="box-placeholder" v-if="zhibiaoAllLimit === 'zhibiaoAll' || currentItem.chart !== 'pie'">拖拽右侧字段进行添加</div>
+          <div class="box-placeholder" v-if="zhibiaoAllLimit === 'zhibiaoAll' || currentItem.chart !== 'pie_chart'">拖拽右侧字段进行添加</div>
         </div>
       </div>
       <div class="module-left__con">
@@ -157,7 +157,7 @@
             tag="ul"
             class="bi-select-tree"
             :class="[{ droppable: startMove ? true : false }]"
-            group="weiduAll"
+            :group="guolvGroup"
             animation="300"
             :move="onMove"
             dragClass="dragClass"
@@ -202,7 +202,7 @@
             v-model="currentItem.size"
             @change="changeBasic('size')"
           />
-          <a-tooltip v-if="currentItem.chart === 'pie'">
+          <a-tooltip v-if="currentItem.chart === 'pie_chart'">
             <template slot="title">
             剩余数量合并为其他
             </template>
@@ -215,7 +215,7 @@
     <div class="module-right">
       <div class="module-right__hd">
         <div style="cursor: pointer" @click="changeTheme">
-          <a-icon type="gold" />订单
+          <a-icon type="gold" />{{currentItem.themeName}}
         </div>
         <div><a-icon type="info-circle" /></div>
       </div>
@@ -282,7 +282,7 @@
                             />
                             <img
                               class="type-icon"
-                              :src="item.img"
+                              src="../../../assets/animal.png"
                               style="height: 15px; width: 15px"
                             />{{ item.dataIndex }}</div>
                         </li>
@@ -315,7 +315,7 @@
                         >
                           <div class="node">
                             <img
-                              :src="ele.img"
+                              src="../../../assets/animal.png"
                               class="type-icon"
                               style="height: 15px; width: 15px"
                             />{{ ele.dataIndex }}</div>
@@ -339,7 +339,7 @@
             <div class="module-right__grid__left">
               <draggable
                 tag="ul"
-                :list="themeZb"
+                :list="themeZhibiao"
                 draggable=".node"
                 class="bi-tree"
                 animation="300"
@@ -347,7 +347,7 @@
               >
                 <transition-group>
                   <li
-                    v-for="(item, index) in themeZb"
+                    v-for="(item, index) in themeZhibiao"
                     :key="item.id"
                     class="item"
                   >
@@ -371,7 +371,7 @@
                             />
                             <img
                               class="type-icon"
-                              :src="item.img"
+                              src="../../../assets/animal.png"
                               style="height: 15px; width: 15px"
                             />{{ item.dataIndex }}</div>
                         </li>
@@ -386,7 +386,7 @@
                         <draggable
                           v-for="(ele, k) in item.children"
                           :key="ele.id"
-                          :list="Array(themeZb[index].children[k])"
+                          :list="Array(themeZhibiao[index].children[k])"
                           class="bi-tree"
                           :options="{
                             forceFallback: true,
@@ -407,7 +407,7 @@
                         >
                           <div class="node">
                             <img
-                              :src="ele.img"
+                              src="../../../assets/animal.png"
                               class="type-icon"
                               style="height: 15px; width: 15px"
                             />
@@ -444,6 +444,7 @@
 import EditAttr from './EditAttr'
 import img from '../../../assets/animal.png'
 import draggable from 'vuedraggable'
+import { mapGetters } from 'vuex'
 export default {
   props: {
     currentItem: {
@@ -460,6 +461,7 @@ export default {
   data () {
     return {
       weiduAllLimit: 'weiduAll',
+      guolvGroup: '',
       zhibiaoAllLimit: '',
       currentModifyItem: {},
       weiduArr: [],
@@ -474,141 +476,8 @@ export default {
       startMove2: false,
       moveEle: {},
       themeWeidu: [],
-      themeWeiduDefault: [
-        {
-          dataIndex: '日期',
-          title: '日期',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          img: img,
-          open: true,
-          hasSort: true,
-          sortName: '0',
-          valType: '1',
-          valWay: '1',
-          valRange: '',
-          id: 1,
-          format: '1',
-          formatOptions: [
-            { title: 'YYYY-MM-DD', value: '1' },
-            { title: 'YYYY年MM月DD日', value: '2' }
-          ],
-          children: [
-            {
-              dataIndex: '年',
-              title: '年',
-              hasSort: true,
-              valType: '1',
-              valWay: '1',
-              valRange: '',
-              sortName: '0',
-              type: 'wd',
-              width: 'auto',
-              align: 'left',
-              id: 2,
-              img: img
-            },
-            // { dataIndex: '季度', title: '季度', type: 'wd', width: 'auto', align: 'left', symbol: '季度', id: 3, img: img, default: ['2021Q1', '2021Q2', '2021Q3', '2021Q4'] },
-            {
-              dataIndex: '月',
-              title: '月',
-              hasSort: true,
-              sortName: '0',
-              type: 'wd',
-              width: 'auto',
-              align: 'left',
-              valType: '1',
-              valWay: '1',
-              valRange: '',
-              id: 4,
-              img: img,
-              format: '',
-              formatOptions: [
-                { title: 'YYYYMM', value: '1' },
-                { title: 'YYYY-MM', value: '2' },
-                { title: 'YYYY年MM月', value: '3' },
-                { title: 'MM月', value: '4' }
-              ]
-            }
-          ]
-        },
-        {
-          dataIndex: '款式名称',
-          title: '款式名称',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 5,
-          img: img
-        },
-        {
-          dataIndex: '仓库SKU',
-          title: '仓库SKU',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 6,
-          img: img
-        },
-        {
-          dataIndex: '部门名称',
-          title: '部门名称',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 7,
-          img: img
-        },
-        {
-          dataIndex: '团队',
-          title: '团队',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 8,
-          img: img
-        },
-        {
-          dataIndex: '产品一级品类',
-          title: '产品一级品类',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 9,
-          img: img
-        },
-        {
-          dataIndex: '产品二级品类',
-          title: '产品二级品类',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 10,
-          img: img
-        },
-        {
-          dataIndex: '产品三级品类',
-          title: '产品三级品类',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 11,
-          img: img
-        },
-        {
-          dataIndex: '产品名称',
-          title: '产品名称',
-          type: 'wd',
-          width: 'auto',
-          align: 'left',
-          id: 12,
-          img: img
-        }
-      ],
-      themeZb: [],
-      themeZbDefault: [],
-      themeZbDefaults: [
+      themeZhibiao: [],
+      themeZbDefaultsThis: [
         {
           dataIndex: '销售',
           img: img,
@@ -780,43 +649,21 @@ export default {
     }
   },
   mounted () {
-    const add = {
-      type: '', // 图形类型
-      chartWidth: '2', // 折线宽度
-      chartDataWay: '1', // 聚合
-      order: '', // 排序
-      area: false, // 面积图
-      smooth: false, // 平滑
-      chartSymbol: '', // 标记图形
-      symbolSize: 6, // 标记图形大小
-      chartLabel: false, // 是否显示标签
-      labelPosition: '', // 标签位置
-      labelFormat: '0' // 标签格式
-    }
-    this.themeZbDefault = this.themeZbDefaults.map(item => {
-      const { children, ...other } = item
-      const child = children.map(ele => {
-        return {
-          ...ele,
-          ...add
-        }
-      })
-      return {
-        children: child,
-        ...other
-      }
-    })
-    this.themeWeidu = this.themeWeiduDefault
-    this.themeZb = this.themeZbDefault
+    this.themeWeidu = this.themeWd
+    this.themeZhibiao = this.themeZb
     this.currentModifyItem = this.currentItem
+  },
+  computed: {
+    ...mapGetters('sso', [
+      'themeWd',
+      'themeZb'
+    ])
   },
   watch: {
     currentItem (newVal) {
-      console.log(newVal)
       this.currentModifyItem = newVal
     },
     currentModifyItem (newVal) {
-      console.log(newVal)
       this.currentModifyItem = newVal
       if (newVal.chart === 'table') {
         this.filterArr4 = newVal.columns
@@ -826,6 +673,12 @@ export default {
         this.filterArr2 = newVal.zhibiao
       }
       this.filterArr3 = newVal.guolv
+    },
+    themeWd (newVal) {
+      this.themeWeidu = newVal
+    },
+    themeZb (newVal) {
+      this.themeZhibiao = newVal
     },
     filterArr1 (newVal) { // 维度添加项
       if (newVal.length > 0) {
@@ -841,7 +694,7 @@ export default {
       this.$emit('changeFilter', obj)
     },
     filterArr2 (newVal) { // 指标添加项
-      if (this.currentModifyItem.chart === 'pie') {
+      if (this.currentModifyItem.chart === 'pie_chart') {
         if (newVal.length > 0) {
           this.zhibiaoAllLimit = ''
         } else {
@@ -872,26 +725,26 @@ export default {
       }
       this.$emit('changeFilter', obj)
     },
-    searchKeyOne (newVal) {
+    searchKeyOne (newVal) { // 维度的搜索
       if (newVal === '') {
-        this.themeWeidu = this.themeWeiduDefault
+        this.themeWeidu = this.themeWd
       } else {
-        const res = this.themeWeiduDefault.filter((item) => {
+        const res = this.themeWd.filter((item) => {
           const re = { ...item }
           return this.filters(re, newVal)
         })
         this.themeWeidu = res
       }
     },
-    searchKeyTwo (newVal) {
+    searchKeyTwo (newVal) { // 指标的搜索
       if (newVal === '') {
-        this.themeZb = this.themeZbDefault
+        this.themeZhibiao = this.themeZb
       } else {
-        const res = this.themeZbDefault.filter((item) => {
+        const res = this.themeZb.filter((item) => {
           const re = { ...item }
           return this.filters(re, newVal)
         })
-        this.themeZb = res
+        this.themeZhibiao = res
       }
     }
   },
@@ -916,6 +769,7 @@ export default {
     start (e) {
       // 维度开始拖动
       this.startMove = true
+      this.guolvGroup = 'weiduAll'
     },
     end (e) {
       // 维度停止拖动
@@ -925,13 +779,24 @@ export default {
     start2 (e) {
       // 指标开始拖动
       const moveEle = e.clone.innerText
-      if (this.currentModifyItem.chart === 'pie' && this.filterArr2.length === 1) {
-        this.startMove2 = false
-      } else if (this.currentModifyItem.chart !== 'table' && this.filterArr2.length !== 0) {
-        const res = this.filterArr2.find((item) => item.dataIndex === moveEle)
-        this.startMove2 = !res
-      } else {
-        this.startMove2 = true
+      this.guolvGroup = ''
+
+      if (this.currentModifyItem.chart === 'table') {
+        if (this.filterArr4.length !== 0) {
+          const res = this.filterArr4.find((item) => item.dataIndex === moveEle)
+          this.startMove2 = !res
+        } else {
+          this.startMove2 = true
+        }
+      } else if (this.currentModifyItem.chart !== 'table') {
+        if (this.currentModifyItem.chart === 'pie_chart' && this.filterArr2.length === 1) {
+          this.startMove2 = false
+        } else if (this.filterArr2.length !== 0) {
+          const res = this.filterArr2.find((item) => item.dataIndex === moveEle)
+          this.startMove2 = !res
+        } else {
+          this.startMove2 = true
+        }
       }
     },
     end2 (e) {
@@ -958,10 +823,16 @@ export default {
       // console.log(e.draggedContext.element.id)
       this.moveEle = e.draggedContext.element
       this.moveId = e.draggedContext.element.id
-
-      if (this.filterArr2.length !== 0) {
-        res = this.filterArr2.find((item) => item.id === this.moveId)
+      if (this.currentModifyItem.chart === 'table') {
+        if (this.filterArr4.length !== 0) {
+          res = this.filterArr4.find((item) => item.id === this.moveId)
+        }
+      } else {
+        if (this.filterArr2.length !== 0) {
+          res = this.filterArr2.find((item) => item.id === this.moveId)
+        }
       }
+
       return !res
     },
     changeTab2 (e) {
@@ -977,7 +848,7 @@ export default {
           }
         })
       } else {
-        this.themeZb.map((item) => {
+        this.themeZhibiao.map((item) => {
           if (item.children) {
             this.$set(item, 'open', this.expand)
           }
@@ -993,7 +864,7 @@ export default {
           }
         })
       } else {
-        this.themeZb.map((ele) => {
+        this.themeZhibiao.map((ele) => {
           if (ele.id === item.id) {
             this.$set(item, 'open', !item.open)
           }
@@ -1041,6 +912,24 @@ export default {
     hide () {
       if (this.$refs.EditAttrModel) {
         this.$refs.EditAttrModel.hide()
+      }
+    },
+    initDataZb (item) {
+      return {
+        code: item.dataset_code,
+        dataIndex: item.field_cn,
+        title: item.field_cn,
+        hasSort: item.is_sort === '1',
+        sortName: item.field_en,
+        type: 'wd',
+        width: 'auto',
+        align: 'left',
+        valType: '1',
+        valWay: '1',
+        valRange: '',
+        id: item.id,
+        img: img,
+        format: ''
       }
     }
   }

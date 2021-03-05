@@ -52,8 +52,8 @@
           <div class="tit">排序</div>
           <div class="setting">
             <a-select
-              :options="sortOptions"
-              v-model="editAttrItem.sortName"
+              :options="sortOptionsChart"
+              v-model="editAttrItem.sortType"
               @change="modifyItemCol('sort')"
               style="width: 100%"
             />
@@ -61,21 +61,21 @@
         </div>
         <div
           class="item"
-          v-if="editAttrItem.symbol || editAttrItem.formatOptions"
+          v-if="editAttrItem.type === 'zb' || (editAttrItem.formatOptions && editAttrItem.formatOptions.length !== 0)"
         >
           <div class="tit">格式</div>
           <div class="setting">
-            <a-select
+            <!-- <a-select
               v-if="editAttrItem.symbol === '数值'"
               v-model="editAttrItem.format"
               :options="formatOptionsNumber"
               @change="modifyItemCol('format')"
               style="width: 100%"
-            />
+            /> -->
             <a-select
-              v-if="editAttrItem.symbol === '数量'"
+              v-if="editAttrItem.type === 'zb'"
               v-model="editAttrItem.format"
-              :options="formatOptionsVal"
+              :options="formatOptionsNumber"
               @change="modifyItemCol('format')"
               style="width: 100%"
             />
@@ -224,24 +224,25 @@
       </div>
       <div
         class="editAttr-bd__con"
-        v-if="editType === 'guolv' && !editAttrItem.valType"
+        v-if="editType === 'guolv' && editAttrItem.time_type !== '0'"
       >
         <div class="">
-          <a-radio-group v-model="filterType" style="margin-bottom: 16px">
+          <a-radio-group v-model="editAttrItem.valType" style="margin-bottom: 16px">
             <a-radio-button value="1"> 多选过滤 </a-radio-button>
             <a-radio-button value="2"> 单选过滤 </a-radio-button>
           </a-radio-group>
           <a-textarea
-            v-if="filterType === '1'"
+            v-if="editAttrItem.valType === '1'"
+            v-model="editAttrItem.valValue"
             placeholder="请点击此处选择..."
             :auto-size="{ minRows: 3, maxRows: 5 }"
           />
-          <a-input v-if="filterType === '2'" placeholder="请点击此处选择..." />
+          <a-input v-if="editAttrItem.valType === '2'" placeholder="请点击此处选择..." v-model="editAttrItem.valValue"/>
         </div>
       </div>
       <div
         class="editAttr-bd__con"
-        v-if="editType === 'guolv' && editAttrItem.valType"
+        v-if="editType === 'guolv' && editAttrItem.time_type === '0'"
       >
         <div class="item">
           <div class="tit">值类型</div>
@@ -275,12 +276,14 @@
               allowClear
               :placeholder="['开始时间', '结束时间']"
               format="YYYY-MM-DD"
+              v-model="editAttrItem.valValue"
             >
               <!-- <a-icon slot="suffixIcon" type="calendar" /> -->
             </a-range-picker>
 
             <a-date-picker
               v-if="editAttrItem.valType === '2'"
+              v-model="editAttrItem.valValue"
               style="width: 150px; min-width: 0"
             />
           </div>
@@ -296,7 +299,6 @@ export default {
   data () {
     return {
       showEdit: false,
-      filterType: '1',
       editAttrItem: {},
       editAttrItemName: '',
       sortOptions: [
@@ -304,12 +306,12 @@ export default {
         { title: '否', value: '0' }
       ],
       sortOptionsChart: [
-        { title: '无序', value: '0' },
+        { title: '默认', value: '0' },
         { title: '升序', value: '1' },
         { title: '降序', value: '2' }
       ],
       orderOptionsChart: [
-        { title: '无序', value: '' },
+        { title: '默认', value: '' },
         { title: '升序', value: 'asc' },
         { title: '降序', value: 'desc' }
       ],
@@ -343,8 +345,8 @@ export default {
         { title: '箭头', value: 'arrow' }
       ],
       formatOptionsDate: [
-        { title: 'YYYY-MM-DD', value: '1' },
-        { title: 'YYYY年MM月DD日', value: '2' }
+        { title: 'YYYY-MM-DD', value: '5' },
+        { title: 'YYYY年MM月DD日', value: '6' }
       ],
       formatOptionsQuarter: [
         { title: 'YYYY年Q季度', value: '1' },
@@ -352,7 +354,7 @@ export default {
         { title: 'Q季度', value: '3' }
       ],
       formatOptionsMontn: [
-        { title: 'YYYYMM', value: '1' },
+        // { title: 'YYYYMM', value: '1' },
         { title: 'YYYY-MM', value: '2' },
         { title: 'YYYY年MM月', value: '3' },
         { title: 'MM月', value: '4' }

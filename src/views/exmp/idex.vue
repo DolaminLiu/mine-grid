@@ -390,7 +390,7 @@ export default {
                   name: ele.name,
                   align: ele.align,
                   sorter: true,
-                  sortName: '',
+                  sortName: ele.field_en,
                   symbol: ele.symbol,
                   width: Number(ele.width),
                   id: ele.id

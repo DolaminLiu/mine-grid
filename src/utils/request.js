@@ -1,8 +1,11 @@
-import Vue from 'vue'
-import axios from 'axios'
+/**
+ * request 网络请求工具
+ * 更详细的 api 文档: https://github.com/umijs/umi-request
+ */
+import { extend } from 'umi-request'
+// import router from '@/router'
 import notification from 'ant-design-vue/es/notification'
-import { VueAxios } from './axios'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import config from '@/config/default.config.js'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -22,23 +25,17 @@ const codeMessage = {
   504: '网关超时。'
 }
 
-// 创建 axios 实例
-const service = axios.create({
-  baseURL: process.env.VUE_APP_API_BASE_URL, // api base_url
-  timeout: 6000 // 请求超时时间
-})
-
-const handleError = (error) => {
+/**
+ * 异常处理程序
+ */
+const errorHandler = (error) => {
   const { response } = error
-
-  console.log(response)
-
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText
-    const { status } = response
+    const { status, url } = response
 
     notification.error({
-      message: `请求错误 ${status}`,
+      message: `请求错误 ${status}: ${url}`,
       description: errorText
     })
   } else if (!response) {
@@ -47,40 +44,56 @@ const handleError = (error) => {
       message: '网络异常'
     })
   }
-
-  return Promise.reject(error)
+  return response
 }
 
-// request interceptor
-service.interceptors.request.use((config) => {
-  const token = Vue.ls.get(ACCESS_TOKEN)
-  if (token) {
-    config.headers['Authorization'] = `${token}` // 让每个请求携带自定义 token 请根据实际情况自行修改
+/**
+ * 配置request请求时的默认参数
+ */
+const client = extend({
+  errorHandler, // 默认错误处理
+  prefix: config.api,
+  timeout: 600000
+})
+// request拦截器, 改变url 或 options
+client.interceptors.request.use((url, options) => {
+  const headers = `uqba74oj3yACyJU0quUL9bglEEP7hkYP`
+    ? {
+      Authorization: `Bearer uqba74oj3yACyJU0quUL9bglEEP7hkYP`
+    }
+    : {}
+
+  return {
+    url,
+    options: { ...options, headers }
   }
-  return config
-}, handleError)
+}, { global: false })
 
-// response interceptor
-service.interceptors.response.use((response) => {
-  const { url } = response.config
-  const { authorization } = response.headers
+// const key = 'updatable'
+// // 克隆响应对象做解析处理
+// client.interceptors.response.use(async (response) => {
+//   try {
+//     const data = await response.clone().json()
 
-  if (url === '/user/login') {
-    Vue.ls.set(ACCESS_TOKEN, authorization)
-  }
+//     if (data && (data.error === 4003 || data.error === 4002)) {
+//       notification.error({
+//         description: '登录已过期，请重新登录',
+//         message: '提示',
+//         key
+//       })
+//       localStorage.removeItem('bi-user_name')
+//       localStorage.removeItem('bi-user_password')
+//       localStorage.removeItem('bi-X-Auth-Token')
+//       localStorage.removeItem('bi-oac_email')
+//       localStorage.removeItem('bi-oac_url')
+//       router.replace('/user/login')
+//       // router.replace('/user/login')
+//       return
+//     }
+//   } catch (error) {
 
-  console.log(response)
-  return response.data
-}, handleError)
+//   }
+//   return response
+// })
 
-const installer = {
-  vm: {},
-  install (Vue) {
-    Vue.use(VueAxios, service)
-  }
-}
-
-export {
-  installer as VueAxios,
-  service as axios
-}
+export default client

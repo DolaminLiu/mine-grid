@@ -115,12 +115,12 @@ export default {
     }
   },
   methods: {
-    resizedEvent () { // 改变宽高
-      const id = this.currentItem.i
-      console.log(this.$refs[`chart${id}`].echarts)
-      setTimeout(() => {
-        this.$refs[`chart${id}`].echarts.resize()
-      }, 200)
+    resizedEvent (i) { // 改变宽高
+      if (this.currentItem.chart !== 'table') {
+        setTimeout(() => {
+          this.$refs[`chart${i}`].echarts.resize()
+        }, 200)
+      }
     },
     deleteItem (item) {
       this.$emit('deleteItem', item)

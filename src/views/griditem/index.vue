@@ -19,7 +19,7 @@
           @click="basicSet"
         />
         <a-button class="forward">预览</a-button>
-        <a-button type="primary" class="save">保存</a-button>
+        <a-button type="primary" class="save" @click="saveScreen('2')">保存</a-button>
         <a-button type="primary" class="save">保存并发布</a-button>
       </div>
     </div>
@@ -59,7 +59,7 @@
                   :i="item.i"
                   :key="item.i"
                   :class="item.active ? 'click-active' : ''"
-                  @resized="resizedEvent"
+                  @resized="resizedEvent(item)"
                   @moved="movedEvent"
                 >
                   <drag-item
@@ -92,6 +92,7 @@
           >
             <a-collapse-panel key="1" header="仪表盘描述">
               <a-textarea
+                v-model="screen_describe"
                 placeholder="请输入仪表盘描述"
                 :rows="4"
                 style="margin-top: 10px"
@@ -156,7 +157,7 @@
                     :rotate="props.isActive ? 90 : 0"
                   />
                 </template>
-                <a-collapse-panel key="0" header="图表类型" v-if="currentItem.chart === 'pie' || currentItem.chart === 'funnel'">
+                <a-collapse-panel key="0" header="图表类型" v-if="currentItem.chart === 'pie_chart' || currentItem.chart === 'funnel'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
                       <div class="setting">
@@ -189,7 +190,7 @@
                         />
                       </div>
                     </div>
-                    <div v-if="currentItem.chart === 'histogram' || currentItem.chart === 'line'">
+                    <div v-if="currentItem.chart === 'histogram' || currentItem.chart === 'line_chart'">
                       <div class="item">
                       <div class="tit">横轴标题</div>
                       <div class="setting">
@@ -215,7 +216,7 @@
                       </div>
                     </div>
                     </div>
-                    <div v-if="currentItem.chart === 'bar'">
+                    <div v-if="currentItem.chart === 'bar_chart'">
                       <div class="item">
                       <div class="tit">横轴标题</div>
                       <div class="setting">
@@ -297,7 +298,7 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="3" header="坐标系网络" v-if="currentItem.chart !== 'pie' && currentItem.chart !== 'table'">
+                <a-collapse-panel key="3" header="坐标系网络" v-if="currentItem.chart !== 'pie_chart' && currentItem.chart !== 'table'">
                   <div class="my-drag-layout__panel__cont" v-if="currentItem.chart === 'funnel'">
                     <div class="item" v-for="ele in chartPosition" :key="ele.index">
                       <div class="tit">{{ele.name}}</div>
@@ -325,7 +326,7 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="4" header="直径" v-if="currentItem.chart === 'pie'">
+                <a-collapse-panel key="4" header="直径" v-if="currentItem.chart === 'pie_chart'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
                       <div class="tit">内直径</div>
@@ -349,7 +350,7 @@
                     </div>
                   </div>
                 </a-collapse-panel>
-                <a-collapse-panel key="5" header="位置" v-if="currentItem.chart === 'pie'">
+                <a-collapse-panel key="5" header="位置" v-if="currentItem.chart === 'pie_chart'">
                   <div class="my-drag-layout__panel__cont">
                     <div class="item">
                       <div class="tit">距顶部</div>
@@ -380,7 +381,7 @@
         <div class="mid-line" v-if="JSON.stringify(currentItem) !== '{}' && currentTab === '1'"></div>
       </div>
     </div>
-    <theme-modal ref="ThemeModal"/>
+    <theme-modal ref="ThemeModal" @chooseItemUp="chooseItemUp"/>
   </div>
 </template>
 
@@ -391,6 +392,7 @@ import ThemeModal from './components/ThemeModal'
 import DataModule from './components/DataModule'
 import gridMethods from '@/mixins/gridMethods'
 import chartSettings from '@/mixins/chartSettings'
+import { datasetField, addScreen } from '@/api'
 const GridLayout = VueGridLayout.GridLayout
 const GridItem = VueGridLayout.GridItem
 export default {
@@ -415,8 +417,8 @@ export default {
         { label: '500', value: 500 },
         { label: '1000', value: 1000 }
       ],
-      hasChooseTheme: false,
       screen_name: '',
+      screen_describe: '',
       menuList: [ // 可选图表类型
         {
           name: 'bar-chart',
@@ -429,7 +431,7 @@ export default {
           name: 'fund',
           comment: 'bar',
           type: 'v-charts',
-          chart: 'bar',
+          chart: 'bar_chart',
           cName: '柱状图'
         },
         {
@@ -443,7 +445,7 @@ export default {
           name: 'pie-chart',
           comment: 'pie',
           type: 'v-charts',
-          chart: 'pie',
+          chart: 'pie_chart',
           cName: '饼图'
         },
         {
@@ -464,10 +466,9 @@ export default {
   watch: {
     currentItem (newVal) {
       this.currentChooseItem = newVal
-      console.log(this.currentType)
     },
     currentType (newVal) {
-      console.log(newVal)
+      // console.log(newVal)
     }
   },
   methods: {
@@ -478,13 +479,44 @@ export default {
       })
       this.currentItem = {}
     },
-    chooseTheme () { // 选择主题
-      if (!this.hasChooseTheme) {
+    chooseTheme () { // 选择主题弹框
+      console.log(this.currentThemeCode)
+      if (this.currentThemeCode === '') {
         this.$refs.ThemeModal.handleShow()
-        this.hasChooseTheme = true
       }
     },
-    changeTheme () { // 改变主题
+    chooseItemUp (data) { // 主题选择确定
+      this.currentThemeCode = data.value
+      this.currentThemeName = data.name
+      this.layoutData.map((item) => {
+        if (item.i === this.currentItem.i) {
+          this.$set(item, 'themeCode', data.value)
+          this.$set(item, 'themeName', data.name)
+          const current = { ...this.currentItem }
+          current.themeCode = data.value
+          current.themeName = data.name
+          this.currentItem = current
+        }
+      })
+      datasetField({ dataset_code: data.value }).then(res => {
+        const { data, error, message } = res
+        if (error !== 0) {
+          this.$message.error(message)
+          return false
+        }
+        this.$store.dispatch('sso/setDataBaseDefault', data)
+        data.map(item => {
+          if (item.type === 'index') {
+            this.$store.dispatch('sso/setThemeZb', item.data)
+            // this.themeZbDefaults = item.data
+          } else {
+            this.$store.dispatch('sso/setThemeWd', item.data)
+            // this.themeWeiduDefault = item.data
+          }
+        })
+      })
+    },
+    changeTheme () { // 改变主题弹框
       this.$refs.ThemeModal.handleShow()
     },
     refresh () {
@@ -492,6 +524,190 @@ export default {
     },
     changeTab (e) {
       this.currentTab = e
+    },
+    saveScreen (type) {
+      console.log(this.layoutData)
+
+      if (this.screen_name === '') {
+        this.$message.info('报表名称不能为空！')
+        return false
+      }
+
+      const componentArr = this.layoutData.map((item, index) => {
+        let obj = {}
+        const gv = item.guolv
+        if (item.components === 'MeTable') {
+          const columns = item.columns
+          if (columns.length === 0) {
+            this.$message.info('请添加维度列！')
+            return false
+          }
+          const weidu = item.columns.filter(col => col.themeType === 'wd')
+          const zhibiao = item.columns.filter(col => col.themeType === 'zb')
+          const dimensionArr = weidu.map(col => {
+            return {
+              field_en: col.field_en,
+              header: col.title,
+              width: col.width,
+              align_type: col.align,
+              sort: col.sortType,
+              time_type: col.formate || ''
+            // time_type:
+            // sort:
+            }
+          })
+          const indexArr = zhibiao.map(col => {
+            return {
+              field_en: col.field_en,
+              index_name: col.title,
+              polymerize_type: '1',
+              format: col.format,
+              width: col.width,
+              align_type: col.align,
+              sort: col.sortType
+            // time_type:
+            // sort:
+            }
+          })
+          const filterArr = gv.map(col => {
+            let type = ''
+            if (col.time_type === '0') {
+              type = 'data_filter_type'
+            } else {
+              type = 'value_type'
+            }
+            return {
+              filter_en: col.field_en,
+              [`${type}`]: col.valType,
+              filter_content: col.valValue
+            }
+          })
+          obj = {
+            page_size: item.pageSize,
+            dimension_arr: dimensionArr,
+            index_arr: indexArr,
+            filter_arr: filterArr
+          }
+        } else {
+          const weidu = item.weidu
+          const zhibiao = item.zhibiao
+          if (zhibiao.length === 0) {
+            this.$message.info('请选择指标！')
+            return false
+          } else if (weidu.length === 0) {
+            this.$message.info('请选择维度！')
+            return false
+          }
+          const extend = item.chartExtend
+          let unique = {}
+          if (item.components === 'line' || item.components === 'histogram') {
+            unique = {
+              horizontal_axis_title: extend.xAxis.name,
+              longitudinal_axis_title: extend['yAxis.0'].name,
+              left_margin: item.grid.left,
+              right_margin: item.grid.right,
+              top_margin: item.grid.top,
+              bottom_margin: item.grid.bottom
+            }
+          } else if (item.components === 'bar') {
+            unique = {
+              horizontal_axis_title: extend['xAxis.0'].name,
+              longitudinal_axis_title: extend.yAxis.name,
+              left_margin: item.grid.left,
+              right_margin: item.grid.right,
+              top_margin: item.grid.top,
+              bottom_margin: item.grid.bottom
+            }
+          } else {
+            let pie = ''
+            if (item.chartPie === '') {
+              pie = '1'
+            } else if (item.chartPie === 'radius') {
+              pie = '2'
+            } else {
+              pie = '3'
+            }
+            unique = {
+              pie_chart_type: pie,
+              in_diameter: item.radiusInner,
+              out_diameter: item.radiusOut,
+              top_margin: item.chartSeriesCenterTop,
+              left_margin: item.chartSeriesCenterLeft
+            }
+          }
+          // const settings = item.chartSettings
+          const dimensionArr = weidu.map(wd => {
+            return {
+              field_en: wd.field_en,
+              sort: wd.sortType
+            }
+          })
+          const indexArr = zhibiao.map(zb => {
+            return {
+              field_en: zb.field_en,
+              index_name: zb.title,
+              index_type: zb.type === 'histogram' ? '2' : '1',
+              polymerize_type: '1',
+              format: zb.labelFormat,
+              is_fill: zb.area ? '1' : '0',
+              is_smooth: zb.smooth ? '1' : '0',
+              thickness: zb.chartWidth,
+              sort: zb.order,
+              is_show_tag: zb.chartLabel,
+              mark_type: zb.chartSymbol,
+              tag_position: zb.labelPosition
+            }
+          })
+          const filterArr = item.guolv.map(gl => {
+            let type = ''
+            if (gl.time_type === '0') {
+              type = 'data_filter_type'
+            } else {
+              type = 'value_type'
+            }
+            return {
+              field_en: gl.field_en,
+              [`${type}`]: gl.valType,
+              filter_content: gl.valValue
+            // time_type:
+            // sort:
+            }
+          })
+          obj = {
+            ...unique,
+            total_count: item.size,
+            position_type: item.legend1,
+            horizontal_position: item.legend2,
+            dimension_arr: dimensionArr,
+            index_arr: indexArr,
+            filter_arr: filterArr
+          }
+        }
+        console.log(obj)
+        return {
+          ...obj,
+          dataset_code: item.themeCode,
+          component_type: item.chart,
+          component_sort: index + 1,
+          component_title: item.title
+        }
+        // const wd = item.weidu
+        // const zb = item.zhibiao
+      })
+
+      const param = {
+        screen_name: this.screen_name,
+        status: '2',
+        component_arr: componentArr
+      }
+      addScreen(param).then(res => {
+        const { data, error, message } = res
+        if (error !== 0) {
+          this.$message.error(message)
+          return false
+        }
+        this.$message.success(data)
+      })
     }
   },
   created () {

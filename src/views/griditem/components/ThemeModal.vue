@@ -12,7 +12,17 @@
   >
     <a-tabs default-active-key="1" type="card">
       <a-tab-pane key="1" tab="数据主题">
-        <div class="grid-theme__wrap" v-for="theme in themeList" :key="theme.value">
+         <div class="grid-theme__wrap__bd">
+        <div class="grid-theme__wrap__bd__con" v-for="item in themeList" :key="item.value" @click="chooseItem(item)">
+              <img
+                :src="item.img"
+                alt="1"
+                style="width: 55px; height: 65px"
+              />
+              {{item.name}}
+          </div>
+         </div>
+        <!-- <div class="grid-theme__wrap" v-for="theme in themeList" :key="theme.value">
           <div class="grid-theme__wrap__hd">
             {{theme.name}}<a-icon type="down" />
           </div>
@@ -26,9 +36,9 @@
               {{item.name}}
             </div>
           </div>
-        </div>
+        </div> -->
       </a-tab-pane>
-      <a-tab-pane key="2" tab="自选表"> </a-tab-pane>
+      <!-- <a-tab-pane key="2" tab="自选表"> </a-tab-pane> -->
     </a-tabs>
     <div class="footer">
       <span class="detail">更多版本说明</span>
@@ -40,33 +50,51 @@
 </template>
 <script>
 import img from '../../../assets/happy.png'
+import { datasetList } from '@/api'
 export default {
   data () {
     return {
       visible: false,
-      themeList: [
-        {
-          name: '已开通主题',
-          value: '0',
-          children: [
-            { name: '采购', value: 'order', img: img },
-            { name: '库存', value: 'detail', img: img },
-            { name: '销售', value: 'details', img: img },
-            { name: '产品', value: 'post', img: img },
-            { name: '仓库', value: 'warehouse', img: img }
-          ]
-        },
-        {
-          name: '待开通主题',
-          value: '1',
-          children: [
-            { name: '店铺', value: 'order', img: img },
-            { name: '广告', value: 'detailss', img: img },
-            { name: '财务', value: 'profit', img: img }
-          ]
-        }
-      ]
+      themeList: []
+      // themeList: [
+      //   {
+      //     name: '已开通主题',
+      //     value: '0',
+      //     children: [
+      //       { name: '采购', value: 'order', img: img },
+      //       { name: '库存', value: 'detail', img: img },
+      //       { name: '销售', value: 'details', img: img },
+      //       { name: '产品', value: 'post', img: img },
+      //       { name: '仓库', value: 'warehouse', img: img }
+      //     ]
+      //   },
+      //   {
+      //     name: '待开通主题',
+      //     value: '1',
+      //     children: [
+      //       { name: '店铺', value: 'order', img: img },
+      //       { name: '广告', value: 'detailss', img: img },
+      //       { name: '财务', value: 'profit', img: img }
+      //     ]
+      //   }
+      // ]
     }
+  },
+  mounted () {
+    datasetList().then(res => {
+      const { data, error, message } = res
+      if (error !== 0) {
+        this.$message.error(message)
+        return false
+      }
+      this.themeList = data.map(item => {
+        return {
+          name: item.dataset_name,
+          value: item.dataset_code,
+          img
+        }
+      })
+    })
   },
   methods: {
     handleShow (data) {
@@ -77,6 +105,7 @@ export default {
     },
     chooseItem (item) {
       this.visible = false
+      this.$emit('chooseItemUp', item)
     }
   }
 }
